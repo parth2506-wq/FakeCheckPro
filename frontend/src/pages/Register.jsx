@@ -112,9 +112,6 @@ const Register = () => {
             onChange={(e) => setFormData({ ...formData, language: e.target.value })}
           >
             <option value="English">English</option>
-            <option value="Spanish">Spanish</option>
-            <option value="French">French</option>
-            <option value="German">German</option>
           </select>
         </div>
         
