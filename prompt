@@ -1,0 +1,982 @@
+You are a senior full-stack engineer and UI/UX engineer.
+
+I am building a research-oriented AI-powered web application called:
+
+"Fake News Detection & Verification Platform"
+
+You need to implement the complete AUTHENTICATION SYSTEM for this project, including the frontend UI and backend authentication APIs.
+
+IMPORTANT:
+Do not redesign the application into a generic SaaS dashboard.
+The authentication pages must establish the same visual design language as the dashboard reference image I have provided.
+
+==================================================
+1. PROJECT TECHNOLOGY STACK
+==================================================
+
+Frontend:
+- React.js
+- Vite
+- Tailwind CSS
+- Axios
+- React Router
+
+Backend:
+- Python
+- FastAPI
+- Uvicorn
+
+Authentication:
+- JWT-based authentication
+- Secure password hashing
+- Protected API routes
+- Access-token based authentication
+
+Database:
+- SQLite for development
+- Architecture should remain compatible with MySQL for production
+
+The existing system architecture follows:
+
+React Frontend
+        ↓
+REST API
+        ↓
+FastAPI Backend
+        ↓
+Authentication Service
+        ↓
+Database
+
+Keep authentication modular and separate from the rest of the application.
+
+==================================================
+2. AUTHENTICATION FEATURES REQUIRED
+==================================================
+
+Implement the following:
+
+1. User Registration
+2. Login
+3. Logout
+4. Forgot Password
+5. Password Reset
+6. Protected Routes
+7. JWT Authentication
+8. Persistent authentication state
+9. Form validation
+10. Proper loading/error/success states
+11. Secure password handling
+12. Language preference during registration
+
+The PRD defines the registration fields as:
+
+- Name
+- Email
+- Password
+- Confirm Password
+- Language Preference
+
+The login page should contain:
+
+- Email
+- Password
+- Remember Me
+- Forgot Password
+- Login button
+- Link to Registration
+
+==================================================
+3. VISUAL DESIGN DIRECTION
+==================================================
+
+THIS IS VERY IMPORTANT.
+
+The uploaded reference image is a dashboard UI.
+
+Use it as the visual design inspiration for the authentication pages.
+
+DO NOT copy the dashboard literally.
+
+Instead, extract its visual language and translate it into Login and Registration pages.
+
+The visual style should be:
+
+- Premium
+- Modern
+- Minimal
+- Soft glassmorphism
+- Professional
+- Slightly warm
+- AI/SaaS product aesthetic
+- Clean enough for an academic/research platform
+
+The authentication pages should feel like they belong to the SAME PRODUCT as the reference dashboard.
+
+==================================================
+4. BACKGROUND DESIGN
+==================================================
+
+Use a soft warm ambient background inspired by the reference image.
+
+Primary background direction:
+
+- Very light warm beige
+- Soft ivory
+- Subtle peach/tan tones
+- Slight warm gray
+- Extremely subtle gradients
+
+Create several large blurred ambient gradient blobs in the background.
+
+For example:
+
+- soft peach/orange glow in one corner
+- subtle beige glow in another
+- very light gray/white central area
+
+These blobs must be:
+
+- blurred
+- low opacity
+- non-distracting
+- purely decorative
+
+Do NOT create a loud colorful gradient background.
+
+The background should feel expensive and calm.
+
+==================================================
+5. GLASSMORPHISM CARD
+==================================================
+
+The login/registration form should sit inside a large centered glassmorphism container.
+
+Use:
+
+- translucent white background
+- backdrop blur
+- subtle white border
+- very soft shadow
+- large rounded corners
+- generous padding
+
+Conceptually:
+
+background:
+rgba(255,255,255,0.55–0.75)
+
+backdrop-filter:
+blur(20px–30px)
+
+border:
+1px solid rgba(255,255,255,0.7)
+
+border-radius:
+approximately 20–28px
+
+shadow:
+very subtle and diffused
+
+IMPORTANT:
+
+Do not make the glass effect extremely transparent.
+
+The form must remain highly readable.
+
+Avoid the typical "cyberpunk glassmorphism" look.
+
+This should be soft, elegant and professional.
+
+==================================================
+6. COLOR SYSTEM
+==================================================
+
+Primary text:
+- Dark navy / deep blue-black
+
+Secondary text:
+- Muted gray
+
+Primary accent:
+- Warm orange / burnt orange
+
+Secondary accent:
+- Soft peach
+
+Background:
+- Ivory / warm white / beige
+
+Borders:
+- Very subtle white/gray
+
+Buttons:
+- Dark navy or warm orange depending on hierarchy
+
+Use orange primarily as an accent rather than flooding the entire interface with orange.
+
+The reference image uses dark navy typography and restrained orange accents.
+Maintain that relationship.
+
+==================================================
+7. LOGIN PAGE
+==================================================
+
+Create a polished Login page.
+
+Recommended structure:
+
+--------------------------------------------------
+Logo / Brand
+--------------------------------------------------
+
+Fake News Detection & Verification Platform
+
+[small brand icon/logo]
+
+--------------------------------------------------
+
+Welcome Back
+
+"Verify information with confidence."
+
+Email
+[____________________________]
+
+Password
+[____________________________]
+                     [Forgot password?]
+
+☐ Remember me
+
+[        Sign In        ]
+
+Don't have an account?
+Create an account
+
+--------------------------------------------------
+
+The exact copy can be improved slightly if necessary, but maintain the product's identity.
+
+The page should not feel like a generic authentication template.
+
+==================================================
+8. LOGIN PAGE VISUAL COMPOSITION
+==================================================
+
+Desktop:
+
+Use a centered or slightly offset glass authentication card.
+
+Possible composition:
+
+LEFT:
+Brand / product messaging
+
+RIGHT:
+Login glass card
+
+OR
+
+CENTER:
+Large glass card with subtle decorative background.
+
+Choose the composition that best matches the uploaded dashboard aesthetic.
+
+The result should visually connect with the dashboard.
+
+Do not add unnecessary illustrations.
+
+Instead, use subtle abstract elements such as:
+
+- blurred circles
+- translucent geometric shapes
+- soft glowing gradients
+- extremely subtle AI/data-inspired decorative patterns
+
+Keep them in the background.
+
+Mobile:
+Stack everything vertically.
+
+The login form should occupy most of the viewport without requiring excessive scrolling.
+
+==================================================
+9. REGISTRATION PAGE
+==================================================
+
+Create a separate registration page.
+
+Fields:
+
+Full Name
+Email
+Password
+Confirm Password
+Language Preference
+
+Button:
+
+Create Account
+
+Below:
+
+Already have an account?
+Sign in
+
+Optional supporting text:
+
+"Create your account to start verifying news and tracking your analysis history."
+
+Keep the form visually consistent with Login.
+
+==================================================
+10. REGISTRATION UX
+==================================================
+
+The registration form should provide real-time validation where appropriate.
+
+Validation:
+
+Name:
+- required
+- reasonable minimum length
+
+Email:
+- required
+- valid email format
+
+Password:
+- required
+- minimum strength requirement
+
+Confirm Password:
+- must match password
+
+Language:
+- required
+- default to English
+
+Display validation errors elegantly.
+
+Do NOT use ugly browser-default alerts.
+
+Use small inline error messages below the relevant field.
+
+Example:
+
+Password
+[••••••••••]
+
+Password must contain at least 8 characters.
+
+==================================================
+11. PASSWORD VISIBILITY
+==================================================
+
+Password inputs should have a small eye icon.
+
+Behavior:
+
+Click eye → show password
+Click again → hide password
+
+Do this for:
+
+- Login password
+- Registration password
+- Confirm password
+- Reset password
+
+==================================================
+12. FORGOT PASSWORD PAGE
+==================================================
+
+Create a Forgot Password page consistent with the same glassmorphism design.
+
+Structure:
+
+Forgot your password?
+
+Enter your registered email and we'll help you reset your password.
+
+Email
+[_____________________]
+
+[ Send Reset Link ]
+
+Back to Login
+
+States:
+
+Initial
+Loading
+Success
+Error
+
+Success message:
+
+"If an account exists for this email, password reset instructions have been sent."
+
+Do not reveal whether an email exists in the database.
+
+==================================================
+13. RESET PASSWORD PAGE
+==================================================
+
+Create a password reset page.
+
+Fields:
+
+New Password
+Confirm New Password
+
+Button:
+
+Reset Password
+
+After successful reset:
+
+"Password reset successfully."
+
+Provide:
+
+"Return to Login"
+
+==================================================
+14. AUTHENTICATION FLOW
+==================================================
+
+Registration:
+
+User
+ ↓
+Registration Form
+ ↓
+Frontend Validation
+ ↓
+POST /auth/register
+ ↓
+FastAPI
+ ↓
+Validate Input
+ ↓
+Check Existing User
+ ↓
+Hash Password
+ ↓
+Create User
+ ↓
+Return Success
+ ↓
+Redirect to Login
+
+Login:
+
+User
+ ↓
+Login Form
+ ↓
+POST /auth/login
+ ↓
+FastAPI
+ ↓
+Validate Credentials
+ ↓
+Verify Password Hash
+ ↓
+Generate JWT
+ ↓
+Return Token
+ ↓
+Frontend stores authentication state
+ ↓
+Redirect to Dashboard
+
+Protected request:
+
+Frontend
+ ↓
+Axios
+ ↓
+Authorization: Bearer <JWT>
+ ↓
+FastAPI
+ ↓
+JWT Verification
+ ↓
+Authenticated User
+ ↓
+Protected Resource
+
+Logout:
+
+User
+ ↓
+Logout
+ ↓
+Clear authentication state/token
+ ↓
+Redirect to Login
+
+==================================================
+15. BACKEND API DESIGN
+==================================================
+
+Implement clean REST APIs.
+
+Recommended endpoints:
+
+POST /api/auth/register
+
+POST /api/auth/login
+
+POST /api/auth/logout
+
+POST /api/auth/forgot-password
+
+POST /api/auth/reset-password
+
+GET /api/auth/me
+
+You may add:
+
+POST /api/auth/refresh
+
+if your implementation requires refresh tokens.
+
+Keep authentication routes isolated inside:
+
+backend/app/auth/
+
+or an equivalent modular structure.
+
+==================================================
+16. BACKEND STRUCTURE
+==================================================
+
+Follow a clean FastAPI structure similar to:
+
+backend/
+│
+├── app/
+│   ├── main.py
+│   │
+│   ├── api/
+│   │   └── routes/
+│   │       └── auth.py
+│   │
+│   ├── auth/
+│   │   ├── jwt.py
+│   │   ├── hashing.py
+│   │   ├── dependencies.py
+│   │   └── schemas.py
+│   │
+│   ├── models/
+│   │   └── user.py
+│   │
+│   ├── database/
+│   │   ├── database.py
+│   │   └── session.py
+│   │
+│   ├── services/
+│   │   └── auth_service.py
+│   │
+│   └── utils/
+│
+├── requirements.txt
+
+Adapt this to the existing project structure if one already exists.
+
+DO NOT unnecessarily rewrite unrelated modules.
+
+==================================================
+17. DATABASE USER MODEL
+==================================================
+
+Create a User model containing at minimum:
+
+id
+name
+email
+password_hash
+language
+created_at
+updated_at
+
+Recommended additional fields:
+
+is_active
+is_verified
+
+Do not store plaintext passwords.
+
+Email should be unique.
+
+Use appropriate indexes.
+
+==================================================
+18. SECURITY REQUIREMENTS
+==================================================
+
+Security is extremely important.
+
+Implement:
+
+- Password hashing
+- JWT authentication
+- Input validation
+- Email validation
+- SQL injection protection through ORM/query parameterization
+- Rate limiting architecture
+- Secure authentication dependencies
+- Protected endpoints
+- Proper CORS configuration
+- No plaintext password storage
+- No passwords in logs
+- No sensitive information in API error messages
+
+Never return password hashes to the frontend.
+
+Do not expose secret keys in source code.
+
+JWT secret must come from environment variables.
+
+Use a .env file for development configuration.
+
+Example:
+
+JWT_SECRET_KEY=...
+JWT_ALGORITHM=HS256
+ACCESS_TOKEN_EXPIRE_MINUTES=...
+
+Do NOT hardcode production secrets.
+
+==================================================
+19. FRONTEND AUTH STATE
+==================================================
+
+Create a centralized authentication mechanism.
+
+For example:
+
+AuthContext
+
+or
+
+a dedicated auth store.
+
+It should provide:
+
+user
+token/auth state
+isAuthenticated
+isLoading
+login()
+logout()
+register()
+refreshUser()
+
+The frontend should know whether the user is authenticated.
+
+==================================================
+20. ROUTE PROTECTION
+==================================================
+
+Create:
+
+ProtectedRoute
+
+Unauthenticated users attempting to access:
+
+/dashboard
+/history
+/profile
+/analytics
+
+should be redirected to:
+
+/login
+
+Authenticated users attempting to access:
+
+/login
+/register
+
+may be redirected to:
+
+/dashboard
+
+==================================================
+21. AXIOS CONFIGURATION
+==================================================
+
+Create a centralized Axios instance.
+
+For example:
+
+src/
+├── api/
+│   └── axios.js
+
+Configure:
+
+- baseURL
+- authentication headers
+- response handling
+- common error handling
+
+Do not duplicate Axios configuration throughout components.
+
+==================================================
+22. UI STATES
+==================================================
+
+Every authentication page must properly handle:
+
+Initial
+Loading
+Success
+Validation Error
+Authentication Error
+Network Error
+Server Error
+
+Examples:
+
+Login button:
+
+Normal:
+Sign In
+
+Loading:
+Signing in...
+
+Disabled during request.
+
+Registration:
+
+Normal:
+Create Account
+
+Loading:
+Creating account...
+
+Do not allow duplicate submissions.
+
+==================================================
+23. MICRO-INTERACTIONS
+==================================================
+
+Use subtle animations.
+
+Examples:
+
+- Glass card fades/slides in
+- Inputs have subtle focus transitions
+- Buttons have subtle hover movement
+- Background ambient blobs move very slowly
+- Error messages appear smoothly
+- Loading indicator is subtle
+
+Do NOT over-animate the page.
+
+The application should feel professional rather than flashy.
+
+==================================================
+24. RESPONSIVENESS
+==================================================
+
+Must work on:
+
+- Desktop
+- Laptop
+- Tablet
+- Mobile
+
+Desktop should resemble the spacious composition of the reference image.
+
+Mobile should simplify the layout.
+
+Do not allow:
+
+- horizontal scrolling
+- overflowing forms
+- clipped buttons
+- unreadable text
+
+==================================================
+25. ACCESSIBILITY
+==================================================
+
+Implement:
+
+- semantic labels
+- proper input labels
+- keyboard navigation
+- visible focus states
+- accessible buttons
+- appropriate aria attributes where necessary
+- sufficient text contrast
+
+Do not rely only on placeholder text as labels.
+
+==================================================
+26. DESIGN CONSISTENCY WITH DASHBOARD
+==================================================
+
+The authentication pages should visually feel like the first screen of the same application.
+
+Reference visual characteristics:
+
+- Large rounded containers
+- Soft glass surfaces
+- Warm ivory/beige background
+- Subtle peach/orange ambient glow
+- Dark navy headings
+- Muted gray secondary text
+- Restrained orange accent
+- Soft shadows
+- Spacious layout
+- Clean typography
+- Minimal icons
+- Premium SaaS appearance
+
+The dashboard reference contains a left navigation area, large dashboard heading, rounded cards, subtle borders and shadows, and warm ambient colors.
+
+Translate those principles into authentication.
+
+DO NOT literally place dashboard navigation on Login/Register.
+
+Authentication pages should be focused and distraction-free.
+
+==================================================
+27. BRANDING
+==================================================
+
+Product name: FakeCheckPro - Fake News Detection & Verification Platform
+
+Use a compact logo mark at the top of the authentication card.
+
+The logo should be simple and professional.
+
+Possible conceptual direction:
+
+A minimal shield/check/news verification symbol.
+
+Do not use a generic AI robot icon.
+
+==================================================
+28. IMPORTANT PRODUCT CONTEXT
+==================================================
+
+This is not merely a binary fake-news classifier.
+
+The overall platform combines:
+
+- Machine Learning
+- NLP
+- Multilingual Processing
+- OCR
+- Explainable AI
+- Trusted Source Cross-Checking
+- Evidence-Aware Claim Verification
+
+The authentication UI should therefore feel like a trustworthy AI verification platform.
+
+Avoid a childish or overly futuristic visual style.
+
+Trust, clarity and professionalism are the priorities.
+
+==================================================
+29. WHAT I EXPECT YOU TO PRODUCE
+==================================================
+
+Implement the authentication system completely.
+
+I want:
+
+1. Login page
+2. Registration page
+3. Forgot Password page
+4. Reset Password page
+5. Authentication API
+6. User database model
+7. JWT implementation
+8. Password hashing
+9. Authentication dependency
+10. Protected routes
+11. Auth context/state
+12. Axios configuration
+13. Form validation
+14. Loading/error/success states
+15. Responsive UI
+16. Clean component structure
+17. Environment configuration
+18. API documentation/comments where useful
+
+==================================================
+30. IMPLEMENTATION RULES
+==================================================
+
+Before writing code:
+
+1. Inspect the existing project structure.
+2. Identify existing frontend and backend files.
+3. Reuse existing architecture where possible.
+4. Do not overwrite unrelated project functionality.
+5. Do not introduce unnecessary libraries.
+6. Keep authentication modular.
+7. Follow the project's existing coding conventions.
+8. If something already exists, improve/reuse it instead of duplicating it.
+
+After implementation:
+
+1. Explain every file created/modified.
+2. Explain how the authentication flow works.
+3. Provide environment variables required.
+4. Provide database migration/setup instructions.
+5. Provide commands to run frontend and backend.
+6. Provide API endpoint documentation.
+7. Explain how to test registration.
+8. Explain how to test login.
+9. Explain how to test protected routes.
+10. Explain how to test password reset.
+
+==================================================
+31. FINAL QUALITY BAR
+==================================================
+
+The result should look like a polished real-world product.
+
+DO NOT produce:
+
+- Generic Bootstrap-like forms
+- Plain white authentication screens
+- Excessive gradients
+- Neon cyberpunk UI
+- Excessive glass transparency
+- Huge unnecessary illustrations
+- Poor mobile layouts
+- Browser-default validation
+- Insecure password handling
+- Hardcoded secrets
+- Monolithic authentication code
+
+The final result should feel like:
+
+"An elegant AI-powered information verification platform"
+
+with the same visual DNA as the uploaded dashboard reference.
+
+Prioritize:
+
+1. Security
+2. Correct authentication flow
+3. Maintainable architecture
+4. Visual consistency
+5. Responsive UX
+6. Accessibility
+7. Clean code
+
+Now inspect the existing codebase and implement the complete authentication system.

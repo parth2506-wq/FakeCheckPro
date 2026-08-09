@@ -1,0 +1,100 @@
+# Authentication System Implementation Plan
+
+This document outlines the architecture and steps to implement the complete authentication system for the "Fake News Detection & Verification Platform", adhering to the design specifications derived from the provided dashboard reference.
+
+## User Review Required
+
+> [!IMPORTANT]
+> Since the `d:\FakeCheckPro` directory is currently empty, this plan includes initializing both the frontend (React + Vite) and backend (FastAPI) applications from scratch. Please approve the directory structure and technology stack before I proceed.
+
+## Open Questions
+
+> [!WARNING]
+> Do you have a specific database schema requirement beyond `id, name, email, password_hash, language, created_at, updated_at, is_active, is_verified` for the `User` model?
+> Do you want me to set up an initial dummy database with a seeded user, or just provide the migration/setup scripts?
+
+## Proposed Architecture
+
+We will structure the repository as a monorepo with `frontend` and `backend` directories.
+
+```text
+d:\FakeCheckPro\
+├── frontend/             # Vite + React application
+│   ├── public/
+│   └── src/
+│       ├── api/          # Axios instance and API calls
+│       ├── assets/       # Images, global styles
+│       ├── components/   # Reusable UI components (buttons, inputs)
+│       ├── context/      # AuthContext
+│       ├── pages/        # Login, Register, Forgot Password, Reset Password, Dashboard (placeholder)
+│       ├── router/       # React Router setup, ProtectedRoutes
+│       └── App.jsx
+│
+└── backend/              # FastAPI application
+    ├── app/
+    │   ├── api/          # Route handlers
+    │   ├── core/         # Security, JWT, hashing, config
+    │   ├── db/           # Database setup and sessions
+    │   ├── models/       # SQLAlchemy models
+    │   ├── schemas/      # Pydantic models (validation)
+    │   └── main.py       # FastAPI application instance
+    └── requirements.txt
+```
+
+### Backend (FastAPI)
+
+#### Dependencies
+- `fastapi`
+- `uvicorn`
+- `sqlalchemy` (ORM for SQLite)
+- `passlib[bcrypt]` (Password hashing)
+- `pyjwt` (JWT generation and validation)
+- `pydantic` (Data validation)
+- `python-dotenv` (Environment variables)
+- `python-multipart` (For OAuth2 form data if needed, or just JSON bodies)
+
+#### Endpoints
+- `POST /api/auth/register`: Create a new user.
+- `POST /api/auth/login`: Authenticate and return JWT token.
+- `POST /api/auth/logout`: Blacklist token (optional, or just clear client-side). We'll rely on client-side clear for stateless JWT, or implement a basic blacklist for security.
+- `POST /api/auth/forgot-password`: Simulate sending a reset link.
+- `POST /api/auth/reset-password`: Reset the password.
+- `GET /api/auth/me`: Get current authenticated user details.
+
+#### Security
+- Passwords hashed using bcrypt.
+- JWT tokens signed with a secret key from `.env`.
+- API endpoints protected using FastAPI's dependency injection (`Depends(get_current_user)`).
+- CORS middleware configured to allow the frontend origin.
+
+### Frontend (React + Vite + Tailwind CSS)
+
+#### Dependencies
+- `react`, `react-dom`
+- `react-router-dom` (Routing)
+- `axios` (API requests)
+- `tailwindcss`, `postcss`, `autoprefixer` (Styling)
+- `lucide-react` (Icons, e.g., eye icon for password visibility)
+
+#### UI/UX Design (Matching Reference)
+- **Background**: Soft ivory/warm white (`bg-[#F9F7F5]` or similar) with subtle, large blurred gradient blobs (soft peach/orange).
+- **Glassmorphism Card**: Translucent white (`bg-white/60`), backdrop blur (`backdrop-blur-xl`), subtle white border (`border-white/50`), soft shadow, rounded corners (`rounded-3xl`).
+- **Typography**: Dark navy/blue-black primary text (`text-slate-800`), muted gray secondary (`text-slate-500`). Google Font: 'Inter' or 'Outfit'.
+- **Accents**: Warm orange/burnt orange for primary actions (buttons) and subtle highlights.
+- **Micro-interactions**: Subtle hover states, smooth transitions for error messages, fading/sliding entry animations.
+
+#### State Management
+- `AuthContext` utilizing React Context API to provide global authentication state (`user`, `token`, `isAuthenticated`, `login`, `logout`, `register`).
+
+## Verification Plan
+
+### Automated Tests
+Currently, no automated tests are planned in the initial setup, but the architecture will support adding `pytest` for the backend and `vitest`/`jest` for the frontend later.
+
+### Manual Verification
+1.  **Environment Setup**: Verify that backend and frontend can be started via commands (`uvicorn app.main:app --reload` and `npm run dev`).
+2.  **Registration Flow**: Register a new user, verify validation rules (email format, password match), and check if the user is saved in the SQLite database with a hashed password.
+3.  **Login Flow**: Attempt login with incorrect credentials (verify error handling), then correct credentials. Verify JWT token is received and stored, and the user is redirected to the dashboard.
+4.  **Protected Routes**: Attempt to access `/dashboard` without being logged in (should redirect to `/login`). Access it while logged in (should succeed).
+5.  **UI Fidelity**: Compare the implemented authentication pages against the visual characteristics of the provided dashboard reference image.
+6.  **Responsiveness**: Test the layout on desktop and mobile viewports.
