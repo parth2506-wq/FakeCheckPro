@@ -59,7 +59,18 @@ The backend is built with FastAPI. It uses a virtual environment to manage depen
    pip install -r requirements.txt
    ```
 
-5. **Run the backend server:**
+5. **Set up environment variables:**
+   Copy the `.env.example` file to `.env`:
+   ```bash
+   cp .env.example .env
+   ```
+   Open the `.env` file and set the `JWT_SECRET_KEY`. You can generate a secure random key using Python:
+   ```bash
+   python -c "import secrets; print(secrets.token_hex(32))"
+   ```
+   Copy the output and paste it as the value for `JWT_SECRET_KEY` in your `.env` file.
+
+6. **Run the backend server:**
    ```bash
    uvicorn app.main:app --reload
    ```
