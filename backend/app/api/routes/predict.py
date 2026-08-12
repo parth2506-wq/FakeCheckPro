@@ -1,41 +1,49 @@
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, status, Depends
+from sqlalchemy.orm import Session
 from app.schemas.prediction import PredictionRequest, PredictionResponse, HealthResponse, ModelInfoResponse
-from app.services.preprocessing import preprocess_text
 from app.services.predictor import predictor
-from app.services.explainability import explain_prediction
+from app.services.prediction_service import PredictionService
+from app.services.history_service import HistoryService
+from app.schemas.history import HistoryCreate
+from app.database.history_db import get_history_db
 
 router = APIRouter(prefix="/api", tags=["ml"])
 
 @router.post("/predict/text", response_model=PredictionResponse)
-def predict_text(request: PredictionRequest):
+def predict_text(request: PredictionRequest, db: Session = Depends(get_history_db)):
     try:
-        # 1. Combine title + text
-        combined_text = f"{request.title} {request.text}".strip()
+        # 1. Predict using common service
+        prediction_result = PredictionService.predict(
+            title=request.title, 
+            text=request.text, 
+            source_type="text"
+        )
         
-        # 2. Preprocess
-        cleaned_text = preprocess_text(combined_text)
-        
-        # 3. Vectorize
-        tfidf_vector = predictor.transform_text(cleaned_text)
-        
-        # 4. Predict
-        prediction, confidence = predictor.predict(tfidf_vector)
-        
-        # 5. Category mapping (0 -> Fake, 1 -> Real)
-        category = "Fake" if prediction == 0 else "Real"
-        
-        # 6. XAI / Explainability
-        reason, important_phrases = explain_prediction(tfidf_vector, prediction)
+        # 2. Save to history
+        history_record = HistoryCreate(
+            source_type="text",
+            title=request.title,
+            input_text=prediction_result["combined_text_used"],
+            prediction=prediction_result["prediction"],
+            category=prediction_result["category"],
+            confidence=prediction_result["confidence"],
+            reason=prediction_result["reason"],
+            important_phrases=prediction_result["important_phrases"]
+        )
+        saved_record = HistoryService.create_record(db, history_record)
         
         return PredictionResponse(
             success=True,
-            prediction=prediction,
-            category=category,
-            confidence=confidence,
-            confidence_percentage=round(confidence * 100, 2),
-            reason=reason,
-            important_phrases=important_phrases
+            prediction=prediction_result["prediction"],
+            category=prediction_result["category"],
+            confidence=prediction_result["confidence"],
+            confidence_percentage=prediction_result["confidence_percentage"],
+            reason=prediction_result["reason"],
+            important_phrases=prediction_result["important_phrases"],
+            history_id=saved_record.id
         )
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
     except HTTPException:
         raise
     except Exception as e:

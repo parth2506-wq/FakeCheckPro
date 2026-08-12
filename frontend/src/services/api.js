@@ -14,7 +14,71 @@ export const analyzeNews = async (title, text) => {
       if (response.status === 422) {
         throw new Error("Please provide at least a title or text for analysis.");
       }
-      throw new Error(`Server returned ${response.status}`);
+      const data = await response.json();
+      throw new Error(data.detail || `Server returned ${response.status}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const analyzeUrl = async (url) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/predict/url`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ url }),
+    });
+
+    if (!response.ok) {
+      const data = await response.json();
+      throw new Error(data.detail || `Server returned ${response.status}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const ocrImage = async (file) => {
+  try {
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    const response = await fetch(`${API_BASE_URL}/ocr/image`, {
+      method: 'POST',
+      body: formData,
+    });
+
+    if (!response.ok) {
+      const data = await response.json();
+      throw new Error(data.detail || `Server returned ${response.status}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const analyzeImage = async (file) => {
+  try {
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    const response = await fetch(`${API_BASE_URL}/predict/image`, {
+      method: 'POST',
+      body: formData,
+    });
+
+    if (!response.ok) {
+      const data = await response.json();
+      throw new Error(data.detail || `Server returned ${response.status}`);
     }
 
     return await response.json();

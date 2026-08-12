@@ -1,20 +1,49 @@
 import React, { useState } from 'react';
 import DashboardLayout from '../components/layout/DashboardLayout';
-import NewsAnalyzer from '../components/analyzer/NewsAnalyzer';
+import ManualAnalyzer from '../components/analyzer/ManualAnalyzer';
+import UrlAnalyzer from '../components/analyzer/UrlAnalyzer';
+import ImageAnalyzer from '../components/analyzer/ImageAnalyzer';
 import PredictionCard from '../components/analyzer/PredictionCard';
 import ExplanationCard from '../components/analyzer/ExplanationCard';
 import ImportantPhrases from '../components/analyzer/ImportantPhrases';
 import FeatureInfluence from '../components/analyzer/FeatureInfluence';
 import ModelInfoCard from '../components/analyzer/ModelInfoCard';
-import { AlertCircle } from 'lucide-react';
+import GlassCard from '../components/ui/GlassCard';
+import { AlertCircle, FileText, Link as LinkIcon, Image as ImageIcon } from 'lucide-react';
 
 const Analyze = () => {
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
+  const [selectedMethod, setSelectedMethod] = useState('manual');
 
   const handleResult = (data) => {
     setResult(data);
     setError(null);
+  };
+
+  const handleMethodChange = (method) => {
+    if (selectedMethod !== method) {
+      setSelectedMethod(method);
+      setResult(null);
+      setError(null);
+    }
+  };
+
+  const MethodButton = ({ id, label, icon: Icon }) => {
+    const isActive = selectedMethod === id;
+    return (
+      <button
+        onClick={() => handleMethodChange(id)}
+        className={`flex items-center justify-center gap-2 flex-1 py-3 px-4 rounded-xl transition-all duration-300 ${
+          isActive 
+            ? 'bg-white shadow-[0_4px_12px_rgba(0,0,0,0.02)] text-brand-navy font-medium' 
+            : 'text-brand-gray hover:bg-white/50 hover:text-brand-navy'
+        }`}
+      >
+        <Icon size={18} className={isActive ? 'text-brand-orange' : ''} />
+        <span className="whitespace-nowrap">{label}</span>
+      </button>
+    );
   };
 
   return (
@@ -23,7 +52,20 @@ const Analyze = () => {
         
         {/* Main Column */}
         <div className="lg:col-span-8 flex flex-col gap-6">
-          <NewsAnalyzer onResult={handleResult} onError={setError} />
+          
+          <GlassCard className="p-2 sm:p-2 bg-white/40">
+            <div className="flex flex-col sm:flex-row gap-2">
+              <MethodButton id="image" label="Scan Image" icon={ImageIcon} />
+              <MethodButton id="url" label="Paste URL" icon={LinkIcon} />
+              <MethodButton id="manual" label="Enter Manually" icon={FileText} />
+            </div>
+          </GlassCard>
+
+          <div className="min-h-[300px]">
+            {selectedMethod === 'manual' && <ManualAnalyzer onResult={handleResult} onError={setError} />}
+            {selectedMethod === 'url' && <UrlAnalyzer onResult={handleResult} onError={setError} />}
+            {selectedMethod === 'image' && <ImageAnalyzer onResult={handleResult} onError={setError} />}
+          </div>
 
           {error && (
             <div className="bg-red-50/80 backdrop-blur-md border border-red-100 p-4 rounded-2xl flex items-center gap-3 text-red-600 shadow-sm animate-in fade-in slide-in-from-top-4">

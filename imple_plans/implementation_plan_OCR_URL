@@ -1,0 +1,106 @@
+# Extend FakeCheckPro Backend Architecture
+
+This plan covers extending the existing FastAPI backend to support URL detection, Image OCR detection, and Prediction History while ensuring a single ML prediction pipeline.
+
+## User Review Required
+> [!IMPORTANT]
+> - **OCR Dependency**: Tesseract OCR must be installed on the host system to run the Image feature. The path will be configurable via `.env`.
+> - **Database Segregation**: Per requirements, prediction history will be stored in a separate `prediction_history.db` SQLite database (with future PostgreSQL compatibility in mind), although user data exists in `fakecheckpro.db`.
+> - **Dependencies**: New dependencies will be added to `requirements.txt`: `trafilatura` (URL extraction), `pytesseract` (OCR), `Pillow` (image processing), `python-multipart` (file uploads), `httpx` (async URL fetching), and `dnspython` (for SSRF protection).
+
+## Open Questions
+- Should `python-multipart` be installed for image uploads (standard for FastAPI)? Assuming yes.
+- Should we use synchronous `requests` or asynchronous `httpx` for URL fetching? I propose `httpx` for better async integration in FastAPI, alongside standard socket/DNS checks for SSRF.
+- Should the `prediction_history.db` share the same SQLAlchemy Base/engine setup conceptually, or be totally distinct? I will create a distinct configuration block for it in `app/database/history_db.py` to keep it separate.
+
+## Proposed Changes
+
+### Core Prediction Refactoring
+Extract ML logic into a single source of truth.
+
+#### [NEW] [prediction_service.py](file:///d:/FakeCheckPro/backend/app/services/prediction_service.py)
+- Create `PredictionService` with `predict(title, text, source_type)` method.
+- Combine text, run preprocessing, transform, predict, explain.
+- Return a standard internal `PredictionResult` dictionary or Pydantic model.
+
+#### [MODIFY] [predict.py](file:///d:/FakeCheckPro/backend/app/api/routes/predict.py)
+- Update `/api/predict/text` to use `PredictionService`.
+- Save result to history using `HistoryService`.
+- Ensure standard disclaimer is added to response.
+
+### URL Detection Feature
+Extract article content from URLs safely.
+
+#### [NEW] [url_validator.py](file:///d:/FakeCheckPro/backend/app/utils/url_validator.py)
+- Implement `validate_and_resolve_url()` to check scheme (`http/https`).
+- Resolve hostname, verify IP is not in private, loopback, or multicast ranges (SSRF protection).
+
+#### [NEW] [article_extractor.py](file:///d:/FakeCheckPro/backend/app/services/article_extractor.py)
+- Use `trafilatura` and `httpx` (or `requests` with strict timeouts) to fetch and parse the article.
+- Enforce size limits and timeout constraints.
+
+#### [NEW] [url.py](file:///d:/FakeCheckPro/backend/app/api/routes/url.py)
+- Endpoint `POST /api/predict/url`.
+- Orchestrate validation -> fetch -> prediction -> save to history.
+
+#### [NEW] [url.py (Schema)](file:///d:/FakeCheckPro/backend/app/schemas/url.py)
+- Request/Response models for URL feature.
+
+### Image Scanner Feature
+OCR capabilities for uploaded images.
+
+#### [NEW] [ocr_service.py](file:///d:/FakeCheckPro/backend/app/services/ocr_service.py)
+- Validate image size and format using `Pillow`.
+- Preprocess image (grayscale, basic enhancement).
+- Extract text using `pytesseract`.
+
+#### [NEW] [image.py](file:///d:/FakeCheckPro/backend/app/api/routes/image.py)
+- Endpoints `POST /api/ocr/image` (preview only, no history) and `POST /api/predict/image` (full pipeline + history).
+- File upload handling with size limits.
+
+#### [NEW] [image.py (Schema)](file:///d:/FakeCheckPro/backend/app/schemas/image.py)
+- Response models for OCR and Image prediction.
+
+### Prediction History Feature
+Track all successful predictions.
+
+#### [NEW] [history_db.py](file:///d:/FakeCheckPro/backend/app/database/history_db.py)
+- Configure connection to `prediction_history.db`.
+
+#### [NEW] [models.py (History)](file:///d:/FakeCheckPro/backend/app/database/history_models.py)
+- Create `PredictionHistory` model with fields: id, source_type, title, input_text, source_url, image_filename, extracted_text, prediction, category, confidence, reason, important_phrases (JSON), created_at.
+
+#### [NEW] [history_service.py](file:///d:/FakeCheckPro/backend/app/services/history_service.py)
+- Create CRUD operations (create_record, get_paginated, delete_record).
+
+#### [NEW] [history.py (Routes)](file:///d:/FakeCheckPro/backend/app/api/routes/history.py)
+- Endpoints: `GET /api/history`, `GET /api/history/{id}`, `DELETE /api/history/{id}`.
+
+#### [NEW] [history.py (Schema)](file:///d:/FakeCheckPro/backend/app/schemas/history.py)
+- Schemas for history serialization and pagination.
+
+### General Configuration and Structure
+
+#### [MODIFY] [main.py](file:///d:/FakeCheckPro/backend/app/main.py)
+- Register new routers.
+- Initialize `prediction_history.db` tables.
+- Update `/api/health` check.
+
+#### [NEW] [.env.example](file:///d:/FakeCheckPro/backend/.env.example)
+- Configuration variables: `DATABASE_URL_HISTORY`, `MAX_IMAGE_SIZE_MB`, `TESSERACT_CMD`, etc.
+
+#### [MODIFY] [requirements.txt](file:///d:/FakeCheckPro/backend/requirements.txt)
+- Add missing libraries.
+
+#### [NEW] [tests/](file:///d:/FakeCheckPro/backend/tests/)
+- Add `test_prediction.py`, `test_url.py`, `test_ocr.py`, `test_history.py`.
+
+## Verification Plan
+
+### Automated Tests
+- Run `pytest` to test endpoints and isolated services (e.g., SSRF rejection, valid OCR parsing mockup, DB constraints).
+
+### Manual Verification
+- Start FastAPI with `uvicorn`.
+- Hit Swagger UI to verify all schemas are accurate.
+- Test `predict/text`, `predict/url`, `ocr/image`, `predict/image`, and history endpoints directly via Swagger UI.

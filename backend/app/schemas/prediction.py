@@ -21,12 +21,14 @@ class ImportantPhrase(BaseModel):
 
 class PredictionResponse(BaseModel):
     success: bool
+    source_type: str = "text"
     prediction: int
     category: str
     confidence: float
     confidence_percentage: float
     reason: str
     important_phrases: List[ImportantPhrase]
+    history_id: Optional[int] = None
 
 class HealthResponse(BaseModel):
     status: str
