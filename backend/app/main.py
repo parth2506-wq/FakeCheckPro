@@ -1,15 +1,31 @@
+from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.api.routes import auth
+from app.api.routes import auth, predict
 from app.database.database import engine
 from app.models import user
+from app.services.predictor import predictor
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 # Create database tables
 user.Base.metadata.create_all(bind=engine)
 
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup: Load ML Models
+    logger.info("Starting up FakeCheckPro ML API...")
+    predictor.load_artifacts()
+    yield
+    # Shutdown
+    logger.info("Shutting down FakeCheckPro API...")
+
 app = FastAPI(
-    title="FakeCheckPro Authentication API",
-    description="Authentication API for Fake News Detection & Verification Platform"
+    title="FakeCheckPro API",
+    description="Authentication and ML Inference API for Fake News Detection",
+    lifespan=lifespan
 )
 
 # CORS configuration
@@ -28,6 +44,7 @@ app.add_middleware(
 )
 
 app.include_router(auth.router)
+app.include_router(predict.router)
 
 @app.get("/")
 def read_root():

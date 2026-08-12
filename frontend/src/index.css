@@ -26,4 +26,24 @@
   .glass-card {
     @apply bg-brand-glass backdrop-blur-[24px] border border-brand-border shadow-[0_8px_32px_rgba(0,0,0,0.04)] rounded-[24px];
   }
+  
+  .dark-feature-card {
+    @apply bg-gradient-to-br from-[#1A2035] to-[#252C42] border border-brand-navy/10 shadow-xl rounded-[24px] text-white;
+  }
+}
+
+/* Custom Scrollbar for a cleaner UI */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(26, 32, 53, 0.2);
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(26, 32, 53, 0.4);
 }

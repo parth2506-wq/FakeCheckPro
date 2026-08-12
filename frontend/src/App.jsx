@@ -8,6 +8,10 @@ import Register from './pages/Register';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import Dashboard from './pages/Dashboard';
+import Analyze from './pages/Analyze';
+import History from './pages/History';
+import HowItWorks from './pages/HowItWorks';
+import Settings from './pages/Settings';
 
 const PublicRoute = ({ children }) => {
   const { isAuthenticated, isLoading } = useAuth();
@@ -45,9 +49,13 @@ const AppRoutes = () => {
       {/* Protected Routes */}
       <Route element={<ProtectedRoute />}>
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/analyze" element={<Analyze />} />
+        <Route path="/history" element={<History />} />
+        <Route path="/how-it-works" element={<HowItWorks />} />
+        <Route path="/settings" element={<Settings />} />
       </Route>
       
-      <Route path="*" element={<Navigate to="/login" replace />} />
+      <Route path="*" element={<Navigate to="/dashboard" replace />} />
     </Routes>
   );
 };
