@@ -1,0 +1,47 @@
+# Chain 2: Evidence-Aware Verification Pipeline
+
+This plan outlines the integration of the Gemini 3.6 Flash Evidence Engine (Chain 2) into the existing FakeCheckPro platform. The design is purely additive and strictly preserves the existing Chain 1 ML pipeline, database schema, and UI structure.
+
+## User Review Required
+
+> [!WARNING]
+> This plan introduces the `google-genai` dependency for the backend. Please confirm this is acceptable. 
+> The Gemini API key will need to be provided in the `.env` file as `GEMINI_API_KEY`. 
+
+## Proposed Changes
+
+### Backend: Configuration & Dependencies
+- **[MODIFY]** [`backend/requirements.txt`](file:///d:/FakeCheckPro/backend/requirements.txt): Add `google-genai` for the current Gemini API SDK.
+- **[MODIFY]** [`backend/.env.example`](file:///d:/FakeCheckPro/backend/.env.example) and [`backend/.env`](file:///d:/FakeCheckPro/backend/.env): Add `GEMINI_API_KEY`.
+
+### Backend: Database & Schemas
+- **[MODIFY]** [`backend/app/database/history_models.py`](file:///d:/FakeCheckPro/backend/app/database/history_models.py): Add new additive SQLAlchemy models: `EvidenceVerification`, `VerificationClaim`, and `VerificationSource`. These will link to `PredictionHistory` via a `prediction_id` foreign key.
+- **[NEW]** [`backend/app/schemas/evidence.py`](file:///d:/FakeCheckPro/backend/app/schemas/evidence.py): Define Pydantic models for `EvidenceRequest`, `EvidenceResult`, `Claim`, and `Source` to enforce the strict JSON structure expected from Gemini.
+
+### Backend: Services
+- **[NEW]** [`backend/app/services/gemini_evidence_service.py`](file:///d:/FakeCheckPro/backend/app/services/gemini_evidence_service.py): Implement the `GeminiEvidenceService` class. This will:
+  - Initialize the `google-genai` client using the environment variable.
+  - Formulate the system instructions according to the evidence rules (ABSENCE OF EVIDENCE IS NOT EVIDENCE OF FALSITY, Source Tiers, etc.).
+  - Call `gemini-3.6-flash` with the Google Search tool enabled.
+  - Enforce the structured JSON output.
+- **[NEW]** [`backend/app/services/evidence_service.py`](file:///d:/FakeCheckPro/backend/app/services/evidence_service.py): Act as a coordinator to call `GeminiEvidenceService` and persist the resulting data to the new database models.
+
+### Backend: API Routes
+- **[NEW]** [`backend/app/api/routes/evidence.py`](file:///d:/FakeCheckPro/backend/app/api/routes/evidence.py): Create `POST /api/evidence/analyze`. It will accept the conceptual input (`article_text`, `ml_prediction`, `ml_confidence`, `source_url`, `history_id`) to maintain decoupling from Chain 1.
+- **[MODIFY]** [`backend/app/main.py`](file:///d:/FakeCheckPro/backend/app/main.py): Include the new `evidence.py` router.
+
+### Frontend: Services & UI
+- **[MODIFY]** [`frontend/src/services/api.js`](file:///d:/FakeCheckPro/frontend/src/services/api.js): Add `analyzeEvidence(data)` function to call the new endpoint.
+- **[NEW]** [`frontend/src/components/analyzer/EvidenceVerification.jsx`](file:///d:/FakeCheckPro/frontend/src/components/analyzer/EvidenceVerification.jsx): A new component to display the Evidence Score, Verification Status, Claims Analysis, and Evidence Summary.
+- **[MODIFY]** [`frontend/src/pages/Analyze.jsx`](file:///d:/FakeCheckPro/frontend/src/pages/Analyze.jsx): Integrate the Chain 2 call. Once Chain 1 succeeds, asynchronously trigger Chain 2 and display a loading state for the Evidence Section. Once Chain 2 resolves, render `EvidenceVerification` alongside `PredictionCard`.
+
+## Verification Plan
+
+### Automated Tests
+- Create tests in `backend/test_evidence.py` or run manual tests simulating various scenarios (fake viral claim, true government announcement, no external corroboration) directly against the `/api/evidence/analyze` endpoint.
+
+### Manual Verification
+- Start the API and frontend.
+- Submit a well-known fake news article and verify Chain 1 catches it and Chain 2 classifies it as `CONTRADICTED` or `LIKELY_MISLEADING` with sources.
+- Submit a real recent news article and verify Chain 2 classifies it as `SUPPORTED` or `LIKELY_CREDIBLE`.
+- Simulate a Google Search failure or API key absence to verify it falls back to `UNVERIFIED` without crashing Chain 1.

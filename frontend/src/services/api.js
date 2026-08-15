@@ -139,3 +139,24 @@ export const toggleSaveHistory = async (id) => {
     throw error;
   }
 };
+
+export const analyzeEvidence = async (history_id) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/evidence/analyze`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ history_id }),
+    });
+
+    if (!response.ok) {
+      const data = await response.json();
+      throw new Error(data.detail || `Server returned ${response.status}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw error;
+  }
+};
