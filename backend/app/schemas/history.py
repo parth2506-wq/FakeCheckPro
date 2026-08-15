@@ -29,6 +29,7 @@ class HistoryResponse(BaseModel):
     confidence: float
     reason: str
     important_phrases: List[ImportantPhrase]
+    saved: bool = False
     created_at: datetime
 
     class Config:

@@ -93,3 +93,14 @@ class HistoryService:
         db.delete(record)
         db.commit()
         return True
+
+    @staticmethod
+    def toggle_save_record(db: Session, history_id: int) -> Optional[PredictionHistory]:
+        record = db.query(PredictionHistory).filter(PredictionHistory.id == history_id).first()
+        if not record:
+            return None
+        
+        record.saved = not record.saved
+        db.commit()
+        db.refresh(record)
+        return record

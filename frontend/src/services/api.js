@@ -96,3 +96,46 @@ export const getModelInfo = async () => {
   const response = await fetch(`${API_BASE_URL}/model/info`);
   return await response.json();
 };
+
+export const getHistory = async (page = 1, size = 50) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/history?page=${page}&size=${size}`);
+    if (!response.ok) {
+      const data = await response.json();
+      throw new Error(data.detail || `Server returned ${response.status}`);
+    }
+    return await response.json();
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const deleteHistory = async (id) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/history/${id}`, {
+      method: 'DELETE',
+    });
+    if (!response.ok) {
+      const data = await response.json();
+      throw new Error(data.detail || `Server returned ${response.status}`);
+    }
+    return await response.json();
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const toggleSaveHistory = async (id) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/history/${id}/save`, {
+      method: 'PUT',
+    });
+    if (!response.ok) {
+      const data = await response.json();
+      throw new Error(data.detail || `Server returned ${response.status}`);
+    }
+    return await response.json();
+  } catch (error) {
+    throw error;
+  }
+};

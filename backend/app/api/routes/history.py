@@ -49,3 +49,10 @@ def delete_history_item(history_id: int, db: Session = Depends(get_history_db)):
         raise HTTPException(status_code=404, detail="History record not found")
     
     return {"success": True, "message": "Prediction history deleted successfully."}
+
+@router.put("/{history_id}/save", response_model=HistoryResponse)
+def toggle_save_history_item(history_id: int, db: Session = Depends(get_history_db)):
+    item = HistoryService.toggle_save_record(db, history_id)
+    if not item:
+        raise HTTPException(status_code=404, detail="History record not found")
+    return item

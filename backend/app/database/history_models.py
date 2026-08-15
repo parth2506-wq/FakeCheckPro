@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Float, DateTime, Text, JSON
+from sqlalchemy import Column, Integer, String, Float, DateTime, Text, JSON, Boolean
 from sqlalchemy.sql import func
 from app.database.history_db import HistoryBase
 
@@ -17,4 +17,5 @@ class PredictionHistory(HistoryBase):
     confidence = Column(Float)
     reason = Column(Text)
     important_phrases = Column(JSON) # List of dictionaries
+    saved = Column(Boolean, default=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now(), index=True)
