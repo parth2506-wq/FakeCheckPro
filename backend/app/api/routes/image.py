@@ -25,7 +25,7 @@ async def ocr_image(file: UploadFile = File(...)):
         raise HTTPException(status_code=500, detail=f"OCR failed: {str(e)}")
 
 @router.post("/predict/image", response_model=ImagePredictionResponse)
-async def predict_image(file: UploadFile = File(...), db: Session = Depends(get_history_db)):
+async def predict_image(file: UploadFile = File(...)):
     try:
         # 1. OCR Extract
         extracted_text = await OCRService.extract_text(file)
@@ -37,21 +37,7 @@ async def predict_image(file: UploadFile = File(...), db: Session = Depends(get_
             source_type="image"
         )
         
-        # 3. Save to history
-        history_record = HistoryCreate(
-            source_type="image",
-            input_text=extracted_text,
-            image_filename=file.filename,
-            extracted_text=extracted_text,
-            prediction=prediction_result["prediction"],
-            category=prediction_result["category"],
-            confidence=prediction_result["confidence"],
-            reason=prediction_result["reason"],
-            important_phrases=prediction_result["important_phrases"]
-        )
-        saved_record = HistoryService.create_record(db, history_record)
-        
-        # 4. Return response
+        # 3. Return response
         return ImagePredictionResponse(
             success=True,
             filename=file.filename,
@@ -62,7 +48,7 @@ async def predict_image(file: UploadFile = File(...), db: Session = Depends(get_
             confidence_percentage=prediction_result["confidence_percentage"],
             reason=prediction_result["reason"],
             important_phrases=prediction_result["important_phrases"],
-            history_id=saved_record.id
+            history_id=None
         )
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))

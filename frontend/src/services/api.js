@@ -161,14 +161,39 @@ export const extractPdf = async (file) => {
   }
 };
 
-export const analyzeEvidence = async (history_id) => {
+export const analyzeEvidence = async (text) => {
   try {
     const response = await fetch(`${API_BASE_URL}/evidence/analyze`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ history_id }),
+      body: JSON.stringify({ text }),
+    });
+
+    if (!response.ok) {
+      const data = await response.json();
+      throw new Error(data.detail || `Server returned ${response.status}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const saveToHistory = async (orderId, mlData, llmData) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/history/save`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        order_id: orderId,
+        ml_data: mlData,
+        llm_data: llmData
+      }),
     });
 
     if (!response.ok) {

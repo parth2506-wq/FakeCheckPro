@@ -7,9 +7,9 @@ from app.database.history_db import get_history_db
 router = APIRouter(prefix="/api/evidence", tags=["evidence"])
 
 @router.post("/analyze", response_model=EvidenceResponse)
-async def analyze_evidence(request: EvidenceRequest, db: Session = Depends(get_history_db)):
+async def analyze_evidence(request: EvidenceRequest):
     try:
-        evidence_data = await EvidenceService.analyze_and_store(db, request.history_id)
+        evidence_data = await EvidenceService.analyze(request.text)
         return EvidenceResponse(
             success=True,
             evidence=evidence_data,

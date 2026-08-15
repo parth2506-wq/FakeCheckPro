@@ -84,8 +84,12 @@ const VoiceAnalyzer = ({ onResult, onError }) => {
     onError(null);
 
     try {
-      const result = await analyzeNews('Voice Transcript', transcript);
-      onResult(result);
+      // Pass the transcript up to Analyze.jsx to orchestrate both calls
+      onResult({
+        source_type: 'text', // Treated as text input
+        title: 'Voice Transcript',
+        text: transcript
+      });
     } catch (err) {
       onError(err.message || 'Analysis failed.');
     } finally {

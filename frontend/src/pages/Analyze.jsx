@@ -13,7 +13,7 @@ import FeatureInfluence from '../components/analyzer/FeatureInfluence';
 import ModelInfoCard from '../components/analyzer/ModelInfoCard';
 import EvidenceVerification from '../components/analyzer/EvidenceVerification';
 import GlassCard from '../components/ui/GlassCard';
-import { analyzeEvidence } from '../services/api';
+import { analyzeNews, analyzeEvidence, saveToHistory } from '../services/api';
 import { AlertCircle, FileText, Link as LinkIcon, Image as ImageIcon, FileUp, Mic, QrCode } from 'lucide-react';
 
 const Analyze = () => {
@@ -25,23 +25,72 @@ const Analyze = () => {
   const [isEvidenceLoading, setIsEvidenceLoading] = useState(false);
   const [evidenceError, setEvidenceError] = useState(null);
 
-  const handleResult = async (data) => {
-    setResult(data);
+  const handleResult = async (data, extractedTextOverride = null) => {
+    // This function will now be called by child components when they have the text ready.
+    // They will pass the raw text to Analyze.jsx, and Analyze.jsx will orchestrate.
+    
+    const textToAnalyze = extractedTextOverride || data.text || data.extracted_text;
+    const titleToAnalyze = data.title || "";
+    
+    if (!textToAnalyze) {
+      setError("No text available to analyze.");
+      return;
+    }
+
+    setResult(null);
     setError(null);
     setEvidenceData(null);
     setEvidenceError(null);
-    
-    // Chain 2: Trigger Evidence Verification
-    if (data.history_id) {
-      setIsEvidenceLoading(true);
-      try {
-        const evidenceResponse = await analyzeEvidence(data.history_id);
-        setEvidenceData(evidenceResponse);
-      } catch (err) {
+    setIsEvidenceLoading(true);
+
+    const orderId = crypto.randomUUID();
+
+    try {
+      // Start both promises
+      const mlPromise = data.prediction !== undefined 
+        ? Promise.resolve(data) 
+        : analyzeNews(titleToAnalyze, textToAnalyze);
+
+      const evidencePromise = analyzeEvidence(textToAnalyze).catch(err => {
         setEvidenceError(err.message || 'Failed to analyze evidence.');
-      } finally {
-        setIsEvidenceLoading(false);
+        return null;
+      });
+
+      // Await ML first and set result immediately so UI updates
+      const mlResponse = await mlPromise;
+      setResult(mlResponse);
+
+      // Now await evidence
+      const evidenceResponse = await evidencePromise;
+
+      if (evidenceResponse) {
+        setEvidenceData(evidenceResponse);
       }
+
+      // Save to History DB
+      if (evidenceResponse && mlResponse.success) {
+        // Construct HistoryCreate equivalent
+        const mlData = {
+          source_type: data.source_type || 'text',
+          title: titleToAnalyze,
+          input_text: textToAnalyze,
+          source_url: data.url || null,
+          image_filename: data.filename || null,
+          extracted_text: textToAnalyze,
+          prediction: mlResponse.prediction,
+          category: mlResponse.category,
+          confidence: mlResponse.confidence,
+          reason: mlResponse.reason,
+          important_phrases: mlResponse.important_phrases
+        };
+        
+        await saveToHistory(orderId, mlData, evidenceResponse.evidence);
+      }
+
+    } catch (err) {
+      setError(err.message || 'An unexpected error occurred during analysis.');
+    } finally {
+      setIsEvidenceLoading(false);
     }
   };
 

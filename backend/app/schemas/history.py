@@ -2,8 +2,10 @@ from pydantic import BaseModel
 from typing import List, Optional, Any
 from datetime import datetime
 from app.schemas.prediction import ImportantPhrase
+from app.schemas.evidence import EvidenceResult
 
 class HistoryCreate(BaseModel):
+    order_id: Optional[str] = None
     source_type: str
     title: Optional[str] = None
     input_text: Optional[str] = None
@@ -18,6 +20,7 @@ class HistoryCreate(BaseModel):
 
 class HistoryResponse(BaseModel):
     id: int
+    order_id: Optional[str] = None
     source_type: str
     title: Optional[str] = None
     input_text: Optional[str] = None
@@ -41,3 +44,8 @@ class HistoryPaginatedResponse(BaseModel):
     page: int
     page_size: int
     total: int
+
+class CombinedSaveRequest(BaseModel):
+    order_id: str
+    ml_data: HistoryCreate
+    llm_data: EvidenceResult

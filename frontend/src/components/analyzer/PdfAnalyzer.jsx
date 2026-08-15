@@ -53,8 +53,13 @@ const PdfAnalyzer = ({ onResult, onError }) => {
     onError(null);
 
     try {
-      const result = await analyzeNews('PDF Document', extractedText);
-      onResult(result);
+      // Pass the extracted text up to Analyze.jsx to orchestrate both calls
+      onResult({
+        source_type: 'pdf',
+        title: 'PDF Document',
+        filename: file.name,
+        extracted_text: extractedText
+      });
     } catch (err) {
       onError(err.message || 'Analysis failed.');
     } finally {

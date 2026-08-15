@@ -10,7 +10,7 @@ from app.database.history_db import get_history_db
 router = APIRouter(prefix="/api", tags=["ml"])
 
 @router.post("/predict/text", response_model=PredictionResponse)
-def predict_text(request: PredictionRequest, db: Session = Depends(get_history_db)):
+def predict_text(request: PredictionRequest):
     try:
         # 1. Predict using common service
         prediction_result = PredictionService.predict(
@@ -18,19 +18,6 @@ def predict_text(request: PredictionRequest, db: Session = Depends(get_history_d
             text=request.text, 
             source_type="text"
         )
-        
-        # 2. Save to history
-        history_record = HistoryCreate(
-            source_type="text",
-            title=request.title,
-            input_text=prediction_result["combined_text_used"],
-            prediction=prediction_result["prediction"],
-            category=prediction_result["category"],
-            confidence=prediction_result["confidence"],
-            reason=prediction_result["reason"],
-            important_phrases=prediction_result["important_phrases"]
-        )
-        saved_record = HistoryService.create_record(db, history_record)
         
         return PredictionResponse(
             success=True,
@@ -40,7 +27,7 @@ def predict_text(request: PredictionRequest, db: Session = Depends(get_history_d
             confidence_percentage=prediction_result["confidence_percentage"],
             reason=prediction_result["reason"],
             important_phrases=prediction_result["important_phrases"],
-            history_id=saved_record.id
+            history_id=None
         )
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))

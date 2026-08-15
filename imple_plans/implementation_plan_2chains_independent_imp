@@ -1,0 +1,67 @@
+# Decouple ML and LLM Chains
+
+Currently, the backend processes requests sequentially:
+1. ML Model predicts -> Saves to History DB (creates `history_id`)
+2. Frontend uses `history_id` to request LLM Evidence Verification.
+3. LLM Evidence Verification reads from History DB -> Saves Evidence.
+
+This creates a tight coupling where the LLM chain depends on the ML chain finishing and saving to the DB first.
+
+## User Review Required
+
+### Approach to Simultaneous Execution
+To run both chains simultaneously and independent of the `history_id`, we have two architectural options. **I recommend Option A** as it preserves the progressive loading experience on the UI (ML result shows quickly, LLM takes a bit longer).
+
+**Option A: Frontend Orchestration (Recommended)**
+1. **Frontend** extracts text (using existing `/api/ocr/image`, `/api/pdf/extract`, etc. if it's a file).
+2. **Frontend** generates an `order_id` (UUID).
+3. **Frontend** calls `/api/predict/text` and `/api/evidence/analyze` **simultaneously** using `Promise.all()`. Both endpoints will take `text` directly (and `order_id`), and neither will save to the DB immediately.
+4. UI progressive rendering works: ML result shows instantly, Evidence shows when LLM finishes.
+5. Once **both** are complete, the frontend calls a new endpoint `/api/history/save` with the `order_id`, ML results, and LLM results to save everything into the History DB at once.
+
+**Option B: Backend Unified Endpoint**
+1. Frontend calls a single endpoint `/api/analyze/full`.
+2. Backend generates `order_id`.
+3. Backend runs ML model and LLM simultaneously using `asyncio.gather()`.
+4. Backend waits for both to finish, saves to History DB with `order_id`, and returns a combined result.
+5. *Drawback*: The UI will have to wait for the slower LLM to finish before showing the ML predictions.
+
+> [!IMPORTANT]
+> **Please confirm if you prefer Option A (Frontend Orchestration) or Option B (Backend Unified Endpoint).**
+
+## Proposed Changes (Assuming Option A)
+
+### Backend Components
+
+#### [MODIFY] app/api/routes/predict.py
+- Remove database saving from `predict_text`, `predict_url`, `predict_image`, etc.
+- Return the raw ML prediction result.
+
+#### [MODIFY] app/api/routes/evidence.py
+- Change `/api/evidence/analyze` to accept `text` (and optionally `order_id`) directly instead of `history_id`.
+- Remove DB saving from this endpoint. It will just return the LLM output.
+
+#### [NEW] app/api/routes/history.py (or update existing)
+- Create a new endpoint `POST /api/history/save` that accepts `order_id`, ML data, and LLM data.
+- This endpoint will handle inserting the `PredictionHistory` and `EvidenceVerification` records simultaneously into the History DB.
+
+#### [MODIFY] app/database/history_models.py
+- Add `order_id` to `PredictionHistory` (as a unique string/UUID) so it can be tracked/matched.
+
+### Frontend Components
+
+#### [MODIFY] frontend/src/services/api.js
+- Update API service functions to match the new backend signatures.
+- Add `saveToHistory(orderId, mlData, llmData)` function.
+
+#### [MODIFY] frontend/src/pages/Analyze.jsx
+- Orchestrate the simultaneous API calls.
+- Wait for both to finish, then call `saveToHistory`.
+
+## Verification Plan
+
+### Manual Verification
+- Test all input methods (Manual, URL, Image, PDF, Voice).
+- Verify that ML results show up quickly (if Option A).
+- Verify that the network tab shows both requests running in parallel.
+- Verify that the History page correctly shows the combined record containing both ML prediction and LLM evidence.

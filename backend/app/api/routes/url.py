@@ -10,7 +10,7 @@ from app.database.history_db import get_history_db
 router = APIRouter(prefix="/api", tags=["ml", "url"])
 
 @router.post("/predict/url", response_model=UrlPredictionResponse)
-async def predict_url(request: UrlPredictionRequest, db: Session = Depends(get_history_db)):
+async def predict_url(request: UrlPredictionRequest):
     try:
         # 1. Fetch and extract article
         extracted_data = await ArticleExtractor.extract_from_url(str(request.url))
@@ -22,22 +22,7 @@ async def predict_url(request: UrlPredictionRequest, db: Session = Depends(get_h
             source_type="url"
         )
         
-        # 3. Save to history
-        history_record = HistoryCreate(
-            source_type="url",
-            title=extracted_data["title"],
-            input_text=prediction_result["combined_text_used"],
-            source_url=str(request.url),
-            extracted_text=extracted_data["text"],
-            prediction=prediction_result["prediction"],
-            category=prediction_result["category"],
-            confidence=prediction_result["confidence"],
-            reason=prediction_result["reason"],
-            important_phrases=prediction_result["important_phrases"]
-        )
-        saved_record = HistoryService.create_record(db, history_record)
-        
-        # 4. Return response
+        # 3. Return response
         return UrlPredictionResponse(
             success=True,
             url=str(request.url),
@@ -49,7 +34,7 @@ async def predict_url(request: UrlPredictionRequest, db: Session = Depends(get_h
             confidence_percentage=prediction_result["confidence_percentage"],
             reason=prediction_result["reason"],
             important_phrases=prediction_result["important_phrases"],
-            history_id=saved_record.id,
+            history_id=None,
             source_domain=extracted_data.get("source_domain")
         )
     except ValueError as e:

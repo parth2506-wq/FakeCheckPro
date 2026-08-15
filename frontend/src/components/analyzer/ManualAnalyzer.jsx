@@ -19,8 +19,13 @@ const ManualAnalyzer = ({ onResult, onError }) => {
     setLoading(true);
     onError(null);
     try {
-      const result = await analyzeNews(title, text);
-      onResult(result);
+      // Instead of calling the API here, pass the data up to Analyze.jsx
+      // which will orchestrate both ML and LLM calls simultaneously
+      onResult({
+        source_type: 'text',
+        title: title,
+        text: text
+      });
     } catch (err) {
       onError(err.message || 'An unexpected error occurred during analysis.');
     } finally {

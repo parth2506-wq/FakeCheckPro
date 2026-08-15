@@ -7,6 +7,7 @@ class PredictionHistory(HistoryBase):
     __tablename__ = "prediction_history"
 
     id = Column(Integer, primary_key=True, index=True)
+    order_id = Column(String, index=True, nullable=True) # UUID to match ML and LLM records
     source_type = Column(String, index=True) # "text", "url", "image"
     title = Column(Text, nullable=True)
     input_text = Column(Text, nullable=True) # Full text input or extracted text

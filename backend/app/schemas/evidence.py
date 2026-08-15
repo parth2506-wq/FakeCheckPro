@@ -2,7 +2,7 @@ from pydantic import BaseModel, Field
 from typing import List, Optional
 
 class EvidenceRequest(BaseModel):
-    history_id: int = Field(..., description="The PredictionHistory ID containing the original input text")
+    text: str = Field(..., description="The original input text to analyze")
 
 class Source(BaseModel):
     title: str

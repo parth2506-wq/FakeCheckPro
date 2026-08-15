@@ -8,6 +8,7 @@ class HistoryService:
     @staticmethod
     def create_record(db: Session, record: HistoryCreate) -> PredictionHistory:
         db_record = PredictionHistory(
+            order_id=record.order_id,
             source_type=record.source_type,
             title=record.title,
             input_text=record.input_text,
@@ -23,6 +24,63 @@ class HistoryService:
         db.add(db_record)
         db.commit()
         db.refresh(db_record)
+        return db_record
+
+    @staticmethod
+    def create_combined_record(db: Session, order_id: str, ml_data: HistoryCreate, llm_data: dict) -> PredictionHistory:
+        import logging
+        logger = logging.getLogger(__name__)
+        from app.database.history_models import EvidenceVerification, VerificationClaim, VerificationSource
+
+        ml_data.order_id = order_id
+        db_record = HistoryService.create_record(db, ml_data)
+
+        # 3. Store Evidence in DB
+        try:
+            db_verification = EvidenceVerification(
+                prediction_id=db_record.id,
+                evidence_score=llm_data.get("evidence_score", 0),
+                verification_status=llm_data.get("verification_status", ""),
+                summary=llm_data.get("summary", "")
+            )
+            db.add(db_verification)
+            db.commit()
+            db.refresh(db_verification)
+
+            for claim in llm_data.get("claims", []):
+                db_claim = VerificationClaim(
+                    verification_id=db_verification.id,
+                    claim_id=claim.get("claim_id", ""),
+                    claim_text=claim.get("claim_text", ""),
+                    status=claim.get("status", ""),
+                    importance=claim.get("importance", ""),
+                    support_score=claim.get("support_score", 0.0),
+                    contradiction_score=claim.get("contradiction_score", 0.0)
+                )
+                db.add(db_claim)
+                db.commit()
+                db.refresh(db_claim)
+
+                for src in claim.get("evidence", []):
+                    db_source = VerificationSource(
+                        claim_id=claim.get("claim_id", ""),
+                        verification_id=db_verification.id,
+                        title=src.get("title", ""),
+                        publisher=src.get("publisher", ""),
+                        url=src.get("url", ""),
+                        published_date=src.get("published_date", ""),
+                        source_tier=src.get("source_tier", 0),
+                        reliability_score=src.get("source_reliability_score", 0.0),
+                        stance=src.get("stance", ""),
+                        relevance=src.get("relevance", ""),
+                        reason=src.get("reason", "")
+                    )
+                    db.add(db_source)
+            db.commit()
+        except Exception as e:
+            logger.error(f"Error saving combined evidence to DB: {str(e)}")
+            db.rollback()
+        
         return db_record
 
     @staticmethod

@@ -41,8 +41,12 @@ const ImageAnalyzer = ({ onResult, onError }) => {
     setLoading(true);
     onError(null);
     try {
-      const result = await analyzeImage(file);
-      onResult(result);
+      // Pass the extracted text up to Analyze.jsx to orchestrate both calls
+      onResult({
+        source_type: 'image',
+        filename: file.name,
+        extracted_text: ocrPreview
+      });
     } catch (err) {
       onError(err.message || 'An unexpected error occurred during image analysis.');
     } finally {
