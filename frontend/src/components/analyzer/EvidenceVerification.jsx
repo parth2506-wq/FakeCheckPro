@@ -87,21 +87,17 @@ const EvidenceVerification = ({ evidenceData, isLoading, error }) => {
 
   return (
     <GlassCard className="mt-6 relative overflow-hidden">
-      <div className="absolute top-0 right-0 p-4 opacity-10">
-        <Search size={120} />
-      </div>
-      
-      <div className="flex items-start justify-between relative z-10 gap-4 flex-wrap">
-        <div>
+      <div className="flex items-start justify-between relative z-10 gap-4">
+        <div className="flex-1 pr-4">
           <div className="flex items-center gap-3 mb-2">
             <h3 className="text-xl font-bold text-brand-navy">Evidence Verification</h3>
             <StatusBadge status={result.verification_status} />
           </div>
-          <p className="text-sm text-gray-600 max-w-2xl">{result.summary}</p>
+          <p className="text-sm text-gray-600">{result.summary}</p>
         </div>
         
-        <div className="flex flex-col items-center bg-white/50 rounded-xl p-3 border border-gray-100 shadow-sm">
-          <span className="text-xs font-semibold uppercase text-gray-500 mb-1 tracking-wider">Evidence Score</span>
+        <div className="flex flex-col items-center bg-white/50 rounded-xl p-3 border border-gray-100 shadow-sm shrink-0">
+          <span className="text-xs font-semibold uppercase text-gray-500 mb-1 tracking-wider">Score</span>
           <EvidenceScoreRing score={result.evidence_score} />
         </div>
       </div>

@@ -1,7 +1,7 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.api.routes import auth, predict, url, image, history, evidence
+from app.api.routes import auth, predict, url, image, history, evidence, pdf
 from app.database.database import engine
 from app.models import user
 from app.database.history_db import engine as history_engine, HistoryBase
@@ -52,6 +52,7 @@ app.include_router(url.router)
 app.include_router(image.router)
 app.include_router(history.router)
 app.include_router(evidence.router)
+app.include_router(pdf.router)
 
 @app.get("/")
 def read_root():

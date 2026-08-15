@@ -1,0 +1,53 @@
+# Implementation Plan: Unified Analyze Workflow Extension
+
+## Goal
+Add three new input methods (Upload PDF, Voice Input, Scan QR) to the Analyze page, seamlessly integrating them with the existing ML Prediction and Gemini Evidence dual-chain architecture.
+
+## Open Questions
+- Voice input relies on the browser's built-in Web Speech API (`webkitSpeechRecognition`), which is fully supported in Chrome, Edge, and Safari, but may have limited support in Firefox. Is this acceptable for this research project?
+
+## Proposed Changes
+
+### Backend
+
+#### [NEW] `app/services/pdf_service.py`
+- Create a `PDFService` class with a single static method `extract_text(file: UploadFile) -> str` using the `pypdf` library.
+
+#### [NEW] `app/api/routes/pdf.py`
+- Create a new router with `POST /api/pdf/extract`.
+- Endpoint reads the uploaded file, calls `PDFService.extract_text()`, and returns `{"text": extracted_text}`.
+
+#### [MODIFY] `app/main.py`
+- Import and include the new `pdf.router`.
+
+#### [MODIFY] `requirements.txt`
+- Add `pypdf==5.0.1`
+
+### Frontend
+
+#### [MODIFY] `package.json`
+- Add `html5-qrcode` to dependencies for webcam QR scanning.
+
+#### [MODIFY] `src/services/api.js`
+- Add `extractPdf(file)` method to post to `/api/pdf/extract`.
+
+#### [NEW] `src/components/analyzer/PdfAnalyzer.jsx`
+- Similar to `ImageAnalyzer`: User uploads PDF -> Frontend calls `extractPdf()` -> Shows extracted text in a `<textarea>` for editing -> User clicks "Analyze" -> Calls existing `analyzeText()` API -> Passes result to `Analyze.jsx`.
+
+#### [NEW] `src/components/analyzer/VoiceAnalyzer.jsx`
+- Uses `window.webkitSpeechRecognition`. User clicks "Start Recording" -> Speaks -> Transcript populates a `<textarea>` -> User clicks "Analyze" -> Calls existing `analyzeText()` API -> Passes result to `Analyze.jsx`.
+
+#### [NEW] `src/components/analyzer/QrAnalyzer.jsx`
+- Uses `html5-qrcode` to open webcam -> Detects QR code containing a URL -> Populates a URL input field -> User clicks "Analyze" -> Calls existing `analyzeUrl()` API -> Passes result to `Analyze.jsx`.
+
+#### [MODIFY] `src/pages/Analyze.jsx`
+- Add the 3 new methods to the top selector bar: `[ Upload PDF ]`, `[ Voice Input ]`, `[ Scan QR ]`.
+- Render the corresponding components based on `selectedMethod`.
+- The existing orchestration logic (`handleResult`) handles both the ML chain and triggering the Evidence chain using `history_id`, perfectly satisfying the architectural requirement that both chains receive the exact same normalized content.
+
+## Verification Plan
+1. Install new dependencies (`pip install pypdf`, `npm install html5-qrcode`).
+2. Verify PDF extraction endpoint works.
+3. Verify Voice recording transcription populates text correctly.
+4. Verify QR scanner launches webcam and decodes URLs.
+5. Confirm that all 3 new methods correctly trigger the ML Pipeline and subsequently the Gemini Evidence Chain, sharing the exact same text/URL payload.

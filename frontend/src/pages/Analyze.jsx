@@ -3,6 +3,9 @@ import DashboardLayout from '../components/layout/DashboardLayout';
 import ManualAnalyzer from '../components/analyzer/ManualAnalyzer';
 import UrlAnalyzer from '../components/analyzer/UrlAnalyzer';
 import ImageAnalyzer from '../components/analyzer/ImageAnalyzer';
+import PdfAnalyzer from '../components/analyzer/PdfAnalyzer';
+import VoiceAnalyzer from '../components/analyzer/VoiceAnalyzer';
+import QrAnalyzer from '../components/analyzer/QrAnalyzer';
 import PredictionCard from '../components/analyzer/PredictionCard';
 import ExplanationCard from '../components/analyzer/ExplanationCard';
 import ImportantPhrases from '../components/analyzer/ImportantPhrases';
@@ -11,7 +14,7 @@ import ModelInfoCard from '../components/analyzer/ModelInfoCard';
 import EvidenceVerification from '../components/analyzer/EvidenceVerification';
 import GlassCard from '../components/ui/GlassCard';
 import { analyzeEvidence } from '../services/api';
-import { AlertCircle, FileText, Link as LinkIcon, Image as ImageIcon } from 'lucide-react';
+import { AlertCircle, FileText, Link as LinkIcon, Image as ImageIcon, FileUp, Mic, QrCode } from 'lucide-react';
 
 const Analyze = () => {
   const [result, setResult] = useState(null);
@@ -77,10 +80,13 @@ const Analyze = () => {
         <div className="lg:col-span-8 flex flex-col gap-6">
           
           <GlassCard className="p-2 sm:p-2 bg-white/40">
-            <div className="flex flex-col sm:flex-row gap-2">
+            <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-2">
               <MethodButton id="image" label="Scan Image" icon={ImageIcon} />
               <MethodButton id="url" label="Paste URL" icon={LinkIcon} />
               <MethodButton id="manual" label="Enter Manually" icon={FileText} />
+              <MethodButton id="pdf" label="Upload PDF" icon={FileUp} />
+              <MethodButton id="voice" label="Voice Input" icon={Mic} />
+              <MethodButton id="qr" label="Scan QR" icon={QrCode} />
             </div>
           </GlassCard>
 
@@ -88,6 +94,9 @@ const Analyze = () => {
             {selectedMethod === 'manual' && <ManualAnalyzer onResult={handleResult} onError={setError} />}
             {selectedMethod === 'url' && <UrlAnalyzer onResult={handleResult} onError={setError} />}
             {selectedMethod === 'image' && <ImageAnalyzer onResult={handleResult} onError={setError} />}
+            {selectedMethod === 'pdf' && <PdfAnalyzer onResult={handleResult} onError={setError} />}
+            {selectedMethod === 'voice' && <VoiceAnalyzer onResult={handleResult} onError={setError} />}
+            {selectedMethod === 'qr' && <QrAnalyzer onResult={handleResult} onError={setError} />}
           </div>
 
           {error && (

@@ -140,6 +140,27 @@ export const toggleSaveHistory = async (id) => {
   }
 };
 
+export const extractPdf = async (file) => {
+  try {
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    const response = await fetch(`${API_BASE_URL}/pdf/extract`, {
+      method: 'POST',
+      body: formData,
+    });
+
+    if (!response.ok) {
+      const data = await response.json();
+      throw new Error(data.detail || `Server returned ${response.status}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const analyzeEvidence = async (history_id) => {
   try {
     const response = await fetch(`${API_BASE_URL}/evidence/analyze`, {
