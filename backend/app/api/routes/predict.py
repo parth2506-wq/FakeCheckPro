@@ -12,8 +12,9 @@ router = APIRouter(prefix="/api", tags=["ml"])
 @router.post("/predict/text", response_model=PredictionResponse)
 def predict_text(request: PredictionRequest):
     try:
-        # 1. Predict using common service
-        prediction_result = PredictionService.predict(
+        # 1. Predict using Multilingual Service (which wraps common PredictionService)
+        from app.services.multilingual_analysis_service import MultilingualAnalysisService
+        prediction_result = MultilingualAnalysisService.process_and_predict(
             title=request.title, 
             text=request.text, 
             source_type="text"
@@ -27,7 +28,11 @@ def predict_text(request: PredictionRequest):
             confidence_percentage=prediction_result["confidence_percentage"],
             reason=prediction_result["reason"],
             important_phrases=prediction_result["important_phrases"],
-            history_id=None
+            history_id=None,
+            original_text=prediction_result.get("original_text"),
+            translated_text=prediction_result.get("translated_text"),
+            detected_language=prediction_result.get("detected_language"),
+            translation_status=prediction_result.get("translation_status")
         )
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))

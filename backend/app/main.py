@@ -1,7 +1,7 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.api.routes import auth, predict, url, image, history, evidence, pdf
+from app.api.routes import auth, predict, url, image, history, evidence, pdf, credibility
 from app.database.database import engine
 from app.models import user
 from app.database.history_db import engine as history_engine, HistoryBase
@@ -21,6 +21,7 @@ async def lifespan(app: FastAPI):
     # Startup: Load ML Models
     logger.info("Starting up FakeCheckPro ML API...")
     predictor.load_artifacts()
+    
     yield
     # Shutdown
     logger.info("Shutting down FakeCheckPro API...")
@@ -53,6 +54,7 @@ app.include_router(image.router)
 app.include_router(history.router)
 app.include_router(evidence.router)
 app.include_router(pdf.router)
+app.include_router(credibility.router)
 
 @app.get("/")
 def read_root():

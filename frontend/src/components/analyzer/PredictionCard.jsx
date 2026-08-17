@@ -20,11 +20,8 @@ const PredictionCard = ({ result }) => {
         <div className="flex flex-col gap-1.5">
           <h3 className="text-xs font-semibold text-brand-gray uppercase tracking-wider">Prediction Result</h3>
           
-          <div className="flex items-center flex-wrap gap-2 text-brand-navy text-lg font-medium">
-            Our model suggests this article is
-            <span className={`px-2.5 py-1 rounded-lg text-sm font-bold tracking-wide ${isFake ? 'bg-red-50 text-red-600 border border-red-100' : 'bg-green-50 text-green-600 border border-green-100'}`}>
-              {isFake ? 'FAKE NEWS' : 'REAL NEWS'}
-            </span>
+          <div className="text-brand-navy text-lg font-medium">
+            The trained ML model indicates a higher likelihood of the '{isFake ? 'Fake' : 'Real'}' label, based on analysis across 60,000 vectorized features.
           </div>
 
           <p className="text-[13px] text-brand-gray/90 mt-1 leading-relaxed max-w-3xl">

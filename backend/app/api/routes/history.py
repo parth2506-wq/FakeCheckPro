@@ -1,11 +1,113 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
+from sqlalchemy import func
+from datetime import datetime, timedelta
+from typing import Optional
+from sqlalchemy.orm import Session
 from typing import Optional
 from app.schemas.history import HistoryPaginatedResponse, HistoryResponse, CombinedSaveRequest
 from app.services.history_service import HistoryService
 from app.database.history_db import get_history_db
 
+import asyncio
+import os
+import json
+import logging
+from google import genai
+from google.genai import types
+
+logger = logging.getLogger(__name__)
+
 router = APIRouter(prefix="/api/history", tags=["history"])
+
+trending_cache = None
+trending_lock = asyncio.Lock()
+
+@router.get("/trending")
+async def get_trending_data():
+    global trending_cache
+    if trending_cache:
+        return trending_cache
+
+    async with trending_lock:
+        if trending_cache:
+            return trending_cache
+            
+        logger.info("Fetching global trending fake topics from Gemini on demand...")
+        try:
+            api_key = os.getenv("GEMINI_API_KEY")
+            if "GOOGLE_API_KEY" in os.environ:
+                api_key = os.getenv("GOOGLE_API_KEY", api_key)
+                
+            if api_key:
+                client = genai.Client(api_key=api_key)
+                prompt = "What are the current top 6 global trending fake news topics and 8 trending keywords? Provide the output as JSON."
+                system_instruction = """
+                You are an AI tracking global misinformation.
+                Return exactly this JSON structure:
+                {
+                  "topics": [
+                    {
+                      "title": "Unverified Claim",
+                      "count": 9,
+                      "subtitle": "Short snippet of a fake news example related to this..."
+                    }
+                  ],
+                  "keywords": [
+                    {
+                      "keyword": "fake news",
+                      "count": "2"
+                    }
+                  ]
+                }
+                Provide 6 trending fake topics, and 8 trending keywords.
+                """
+                
+                response = client.models.generate_content(
+                    model='gemini-3.6-flash',
+                    contents=prompt,
+                    config=types.GenerateContentConfig(
+                        system_instruction=system_instruction,
+                        response_mime_type="application/json",
+                        temperature=0.7
+                    )
+                )
+                
+                raw_text = response.text
+                if raw_text.startswith("```json"):
+                    raw_text = raw_text.strip("```json").strip("```").strip()
+                elif raw_text.startswith("```"):
+                    raw_text = raw_text.strip("```").strip()
+                    
+                data = json.loads(raw_text)
+                trending_cache = {
+                    "trending_topics": data.get("topics", []),
+                    "trending_keywords": data.get("keywords", [])
+                }
+                return trending_cache
+            else:
+                raise Exception("No Gemini API key found")
+        except Exception as e:
+            logger.error(f"Failed to fetch trending topics: {str(e)}")
+            trending_cache = {
+                "trending_topics": [
+                    {"title": "Unverified Claim", "count": 9, "subtitle": "cis Just Backed Trump, Released SPREAD THIS BREAKING: Pope Franc Incredible Statement..."},
+                    {"title": "Miracle Cure", "count": 8, "subtitle": "BREAKING!!! SHOCKING new discovery - drinking hot lemon water at 4 AM cures ALL..."},
+                    {"title": "Health Misinformation", "count": 6, "subtitle": "BREAKING!!! SHOCKING new discovery - drinking hot lemon water at 4 AM cures ALL..."},
+                    {"title": "Big Pharma Conspiracy", "count": 6, "subtitle": "BREAKING!!! SHOCKING miracle cure discovered!"},
+                    {"title": "Hoax", "count": 5, "subtitle": "Breaking: scientists claim the moon is made of..."},
+                    {"title": "Nasa", "count": 4, "subtitle": "NASA has confirmed that aliens have landed in..."}
+                ],
+                "trending_keywords": [
+                    {"keyword": "commonwealth games 2026", "count": "2"},
+                    {"keyword": "fake news", "count": "2"},
+                    {"keyword": "unverified claim", "count": "2"},
+                    {"keyword": "the hindu", "count": "1"},
+                    {"keyword": "india news", "count": "1"},
+                    {"keyword": "kerala floods", "count": "1"}
+                ]
+            }
+            return trending_cache
 
 @router.get("", response_model=HistoryPaginatedResponse)
 def get_history(
@@ -34,6 +136,80 @@ def get_history(
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to fetch history: {str(e)}")
+
+@router.get("/dashboard_stats")
+def get_dashboard_stats(db: Session = Depends(get_history_db)):
+    try:
+        from app.database.history_models import PredictionHistory
+        
+        total_checks = db.query(PredictionHistory).count()
+        saved_reports = db.query(PredictionHistory).filter(PredictionHistory.saved == True).count()
+        
+        real_count = db.query(PredictionHistory).filter(PredictionHistory.confidence >= 0.6).count()
+        fake_count = db.query(PredictionHistory).filter(PredictionHistory.confidence <= 0.4).count()
+        partial_count = db.query(PredictionHistory).filter(PredictionHistory.confidence > 0.4, PredictionHistory.confidence < 0.6).count()
+        
+        # Last 14 days activity
+        fourteen_days_ago = datetime.utcnow() - timedelta(days=14)
+        
+        # For SQLite we can just extract date as string if it is stored as iso format
+        # Or using func.date() which works in SQLite
+        activity = db.query(
+            func.date(PredictionHistory.created_at).label('d'),
+            func.count(PredictionHistory.id)
+        ).filter(
+            PredictionHistory.created_at >= fourteen_days_ago
+        ).group_by(func.date(PredictionHistory.created_at)).all()
+        
+        activity_map = {row[0]: row[1] for row in activity if row[0]}
+        
+        # Generate last 14 days dates to ensure all days are represented
+        activity_data = []
+        for i in range(13, -1, -1):
+            date_str = (datetime.utcnow() - timedelta(days=i)).strftime('%Y-%m-%d')
+            activity_data.append({
+                "date": date_str,
+                "count": activity_map.get(date_str, 0)
+            })
+            
+        avg_credibility_val = db.query(func.avg(PredictionHistory.confidence)).scalar() or 0
+        avg_credibility = int(avg_credibility_val * 100)
+        
+        # Distribution
+        dist_0_20 = db.query(PredictionHistory).filter(PredictionHistory.confidence <= 0.2).count()
+        dist_21_40 = db.query(PredictionHistory).filter(PredictionHistory.confidence > 0.2, PredictionHistory.confidence <= 0.4).count()
+        dist_41_60 = db.query(PredictionHistory).filter(PredictionHistory.confidence > 0.4, PredictionHistory.confidence <= 0.6).count()
+        dist_61_80 = db.query(PredictionHistory).filter(PredictionHistory.confidence > 0.6, PredictionHistory.confidence <= 0.8).count()
+        dist_81_100 = db.query(PredictionHistory).filter(PredictionHistory.confidence > 0.8).count()
+        
+        distribution = [
+            {"name": "0-20", "count": dist_0_20},
+            {"name": "21-40", "count": dist_21_40},
+            {"name": "41-60", "count": dist_41_60},
+            {"name": "61-80", "count": dist_61_80},
+            {"name": "81-100", "count": dist_81_100},
+        ]
+        
+        langs = db.query(
+            PredictionHistory.detected_language, 
+            func.count(PredictionHistory.id)
+        ).group_by(PredictionHistory.detected_language).all()
+        
+        languages = [{"name": (l[0] or "Unknown").upper(), "count": l[1]} for l in langs]
+        
+        return {
+            "total_checks": total_checks,
+            "real": real_count,
+            "partial": partial_count,
+            "fake": fake_count,
+            "saved_reports": saved_reports,
+            "activity": activity_data,
+            "avg_credibility": avg_credibility,
+            "distribution": distribution,
+            "languages": languages
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @router.post("/save", response_model=HistoryResponse)
 def save_combined_history(request: CombinedSaveRequest, db: Session = Depends(get_history_db)):

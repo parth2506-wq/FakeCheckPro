@@ -161,14 +161,20 @@ export const extractPdf = async (file) => {
   }
 };
 
-export const analyzeEvidence = async (text) => {
+export const analyzeEvidence = async (text, translated_text, detected_language, ml_result, user_output_language) => {
   try {
     const response = await fetch(`${API_BASE_URL}/evidence/analyze`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ text }),
+      body: JSON.stringify({ 
+        text, 
+        translated_text, 
+        detected_language, 
+        ml_result, 
+        user_output_language 
+      }),
     });
 
     if (!response.ok) {
@@ -181,6 +187,35 @@ export const analyzeEvidence = async (text) => {
     throw error;
   }
 };
+
+export const analyzeCredibility = async (title, text, user_output_language) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/credibility/analyze`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ 
+        title, 
+        text, 
+        user_output_language 
+      }),
+    });
+
+    if (!response.ok) {
+      if (response.status === 422) {
+        throw new Error("Please provide at least a title or text for analysis.");
+      }
+      const data = await response.json();
+      throw new Error(data.detail || `Server returned ${response.status}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw error;
+  }
+};
+
 
 export const saveToHistory = async (orderId, mlData, llmData) => {
   try {

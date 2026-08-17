@@ -19,7 +19,12 @@ class HistoryService:
             category=record.category,
             confidence=record.confidence,
             reason=record.reason,
-            important_phrases=[phrase.model_dump() for phrase in record.important_phrases]
+            important_phrases=[phrase.model_dump() for phrase in record.important_phrases],
+            original_text=record.original_text,
+            detected_language=record.detected_language,
+            translated_text=record.translated_text,
+            translation_status=record.translation_status,
+            user_output_language=record.user_output_language
         )
         db.add(db_record)
         db.commit()

@@ -1,0 +1,66 @@
+# Final Credibility Decision Engine Implementation Plan
+
+This document outlines the approach for building the ADDITIVE BACKEND LAYER on top of Chain 1 (ML Fake News Classifier) and Chain 2 (Gemini Evidence Verification) to intelligently combine their signals into a unified Final Credibility Assessment.
+
+## User Review Required
+
+> [!WARNING]
+> No UI/UX or Database changes will be made. The new analysis data will be strictly returned via a new REST API endpoint. The database will only be minimally touched if strictly required to not break existing schema dependencies, but based on my review, no DB changes are strictly necessary for this backend feature if we only expose it via a new API endpoint. Please confirm if you strictly need database additions (e.g. `final_credibility_risk_score` on an existing history table) or if memory/API-only is sufficient for now. I will plan to avoid DB changes entirely unless specified otherwise.
+
+## Proposed Changes
+
+### Gemini Evidence Service Updates
+
+Modify the Gemini service prompt and Pydantic schemas to strictly output the new required evidence attributes (`evidence_direction`, `evidence_quality`, `source_reliability_score`).
+
+#### [MODIFY] `app/schemas/evidence.py`
+- Add `evidence_direction: str` (SUPPORTING, CONTRADICTING, MIXED, INSUFFICIENT)
+- Add `evidence_quality: str` (HIGH, MEDIUM, LOW)
+- Add `source_reliability_score: float` (0-100)
+
+#### [MODIFY] `app/services/gemini_evidence_service.py`
+- Update `system_instruction` with new detailed instructions for Evidence Score, Evidence Direction, Evidence Quality, Source Reliability, Verification Status, and explicitly instruct Gemini NOT to calculate the final credibility score or use the ML prediction to skew evidence.
+- Update `_build_error_fallback` to match the updated schema.
+
+### Decision Engine Module
+
+Create a standalone, deterministic Python module that computes the final risk score and assessment, decoupled from Gemini.
+
+#### [NEW] `app/services/credibility_decision_engine.py`
+- Implement configurations: `EVIDENCE_QUALITY_WEIGHTS`, `RISK_BANDS`, etc.
+- Implement normalization for ML risk (`ml_fake_risk`) and Evidence risk (`evidence_fake_risk`).
+- Implement the base weighting logic (40% ML, 60% Evidence).
+- Implement all strong evidence override rules (STRONG CONTRADICTION, STRONG SUPPORT, INSUFFICIENT EVIDENCE, etc.).
+- Implement final score clamping, risk band classification, and explainable decision reasoning.
+
+### Schema & API Orchestration
+
+Create a unified endpoint that orchestrates calling Chain 1, Chain 2, and the Decision Engine sequentially.
+
+#### [NEW] `app/schemas/credibility.py`
+- Create `CredibilityAnalyzeRequest` (inherits from PredictionRequest fields + languages).
+- Create `CredibilityAnalyzeResponse` containing the full 0-100 score, overrides, reasoning, calculation metadata, and Chain 1/Chain 2 raw outputs.
+
+#### [NEW] `app/api/routes/credibility.py`
+- Implement `POST /api/credibility/analyze` endpoint.
+- Orchestrate `MultilingualAnalysisService` (Chain 1) and `GeminiEvidenceService` (Chain 2).
+- Pass both results into `CredibilityDecisionEngine`.
+- Return the final structured output.
+- Handle Gemini failure gracefully (falling back to ML-only risk with `UNVERIFIED`).
+
+#### [MODIFY] `app/main.py`
+- Register `credibility` router.
+
+### Testing
+
+#### [NEW] `tests/test_credibility_engine.py`
+- Create pure unit tests for the deterministic `CredibilityDecisionEngine`.
+- Cover all 10 standard test cases (Strong Contradiction, Strong Support, Insufficient Evidence, Weak Contradiction, Conflicting Signals, Mixed Evidence, Invalid constraints, API Failures, etc.).
+
+## Verification Plan
+
+### Automated Tests
+- `pytest tests/test_credibility_engine.py -v`
+
+### Manual Verification
+- A POST request to `/api/credibility/analyze` using mock text that triggers a clear "FAKE" ML prediction, paired with mock evidence of varying types to observe the correct fallback and override logic.

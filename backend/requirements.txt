@@ -17,3 +17,7 @@ httpx
 dnspython==2.6.1
 google-genai
 pypdf==5.0.1
+langdetect==1.0.9
+deep-translator==1.11.4
+curl_cffi==0.16.0
+pytest

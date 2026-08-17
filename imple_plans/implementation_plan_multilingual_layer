@@ -1,0 +1,58 @@
+# Multilingual Processing Layer Implementation
+
+The goal is to introduce a multilingual layer that supports English, Hindi, and Marathi without modifying the core logic of the existing ML classifier (Chain 1) or breaking the Evidence Verification pipeline (Chain 2).
+
+## Proposed Changes
+
+### Dependencies
+- Add `langdetect` to `requirements.txt` for fast, local language identification.
+- Add `deep-translator` to `requirements.txt` as a deterministic translation service (Google Translate API) to translate Hindi and Marathi into English for Chain 1, avoiding unnecessary Gemini translation calls.
+
+### Database (`backend/app/database/history_models.py`)
+- **[MODIFY]** `PredictionHistory` model to include:
+  - `original_text` (Text)
+  - `detected_language` (String)
+  - `translated_text` (Text)
+  - `translation_status` (String)
+  - `user_output_language` (String)
+- **Note**: A small SQLite migration script will be executed to run `ALTER TABLE prediction_history ADD COLUMN ...` to safely accommodate the new metadata without breaking existing records.
+
+### Backend Services
+#### [NEW] `backend/app/services/multilingual_analysis_service.py`
+- Implements `LanguageDetectionService` using `langdetect` with a confidence threshold.
+- Implements `TranslationService` using `deep-translator` (GoogleTranslator) to translate Marathi and Hindi into English.
+- Acts as an adapter that coordinates the pipeline: extracts/combines text -> detects language -> translates (if needed) -> invokes the existing `PredictionService.predict(english_text)` -> returns combined results.
+
+#### [MODIFY] `backend/app/services/gemini_evidence_service.py`
+- Update `verify_evidence` to accept `original_text`, `detected_language`, `translated_text`, `ml_result`, and `user_output_language`.
+- Enhance the `system_instruction` to include the specific instructions provided in the requirements, ensuring Gemini searches in the original language first, and outputs the final explanation in the `user_output_language`.
+
+#### [MODIFY] API Routes (`predict.py`, `url.py`, `image.py`, `pdf.py`)
+- Update all these endpoints to use `MultilingualAnalysisService.process_and_predict` instead of directly calling `PredictionService.predict`.
+- This ensures all inputs (PDF, Voice, QR, URL, Raw Text, Image) automatically benefit from the multilingual layer.
+
+#### [MODIFY] Schemas (`backend/app/schemas/prediction.py`, `evidence.py`, `history.py`)
+- Update `PredictionResponse` to return the new multilingual fields.
+- Update `EvidenceRequest` to receive the multilingual context and Chain 1 results.
+- Update `HistoryCreate` and `HistoryResponse` to persist the new multilingual fields.
+
+### Frontend Integration
+#### [MODIFY] `frontend/src/pages/Analyze.jsx`
+- Update `handleResult` to pass the new fields from `mlResponse` (`detected_language`, `translated_text`, `prediction`, etc.) into `analyzeEvidence`.
+- **Note on UI Language Selector**: The instructions mention an existing language selection UI. If it exists in the codebase (e.g., local storage preference), I will read from it. If it doesn't currently exist in the frontend UI, I will add a minimal `user_output_language` state (defaulting to English) to ensure the full pipeline can be tested, as instructed by "Do not rebuild the language-selection UI. Connect it."
+
+## Verification Plan
+
+### Automated Tests
+- No formal unit tests are currently present, but manual testing of the API endpoints will be conducted using `curl` or Postman.
+
+### Manual Verification
+- Test all input sources (Raw Text, URL, PDF, Image, Voice) with English, Hindi, and Marathi inputs using the frontend UI.
+- Verify that Chain 1 successfully produces a prediction for Marathi/Hindi text by acting on the English translation.
+- Verify that the Gemini backend log shows it received the original Marathi/Hindi text and the Chain 1 ML result.
+- Verify the final Gemini response is in the requested `user_output_language`.
+
+## Open Questions
+
+> [!WARNING]
+> Since this relies on modifying the SQLite `prediction_history` table, I will use `ALTER TABLE` to add columns to the existing database file. Is this acceptable, or would you prefer I recreate the table if no critical data is currently stored?

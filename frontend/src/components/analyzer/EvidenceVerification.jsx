@@ -60,7 +60,7 @@ const EvidenceVerification = ({ evidenceData, isLoading, error }) => {
       <GlassCard className="mt-6 flex flex-col items-center justify-center p-8 gap-4">
         <div className="w-12 h-12 border-4 border-brand-orange border-t-transparent rounded-full animate-spin"></div>
         <p className="text-brand-gray font-medium text-center">
-          Searching for evidence and analyzing claims using Gemini...<br />
+          Searching for evidence and analyzing claims using the Evidence Intelligence Engine...<br />
           <span className="text-xs opacity-75">This may take up to 20 seconds.</span>
         </p>
       </GlassCard>
@@ -90,7 +90,7 @@ const EvidenceVerification = ({ evidenceData, isLoading, error }) => {
       <div className="flex items-start justify-between relative z-10 gap-4">
         <div className="flex-1 pr-4">
           <div className="flex items-center gap-3 mb-2">
-            <h3 className="text-xl font-bold text-brand-navy">Evidence Verification</h3>
+            <h3 className="text-xl font-bold text-brand-navy">Evidence Intelligence Engine</h3>
             <StatusBadge status={result.verification_status} />
           </div>
           <p className="text-sm text-gray-600">{result.summary}</p>

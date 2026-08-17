@@ -1,21 +1,23 @@
 import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { LayoutDashboard, ScanSearch, History, Settings, Info, LogOut } from 'lucide-react';
+import { LayoutDashboard, ScanSearch, History, User, Info, LogOut } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { useTranslation } from 'react-i18next';
 
 const Sidebar = () => {
   const { logout } = useAuth();
   const location = useLocation();
+  const { t } = useTranslation();
 
   const mainLinks = [
-    { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
-    { name: 'Analyze News', path: '/analyze', icon: ScanSearch },
-    { name: 'History', path: '/history', icon: History },
+    { name: t('sidebar.dashboard'), path: '/dashboard', icon: LayoutDashboard },
+    { name: t('sidebar.analyze'), path: '/analyze', icon: ScanSearch },
+    { name: t('sidebar.history'), path: '/history', icon: History },
   ];
 
   const systemLinks = [
-    { name: 'How It Works', path: '/how-it-works', icon: Info },
-    { name: 'Settings', path: '/settings', icon: Settings },
+    { name: t('sidebar.howItWorks'), path: '/how-it-works', icon: Info },
+    { name: t('sidebar.profile', 'Profile'), path: '/profile', icon: User },
   ];
 
   const NavItem = ({ item }) => {
@@ -71,7 +73,7 @@ const Sidebar = () => {
         className="flex items-center gap-3 px-4 py-3 rounded-2xl text-brand-gray hover:bg-white/50 hover:text-red-500 transition-all duration-300 mt-auto text-left"
       >
         <LogOut size={18} />
-        <span>Log Out</span>
+        <span>{t('sidebar.logout')}</span>
       </button>
     </aside>
   );

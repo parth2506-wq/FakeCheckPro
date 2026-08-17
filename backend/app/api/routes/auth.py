@@ -57,6 +57,20 @@ def logout():
 def read_users_me(current_user: User = Depends(dependencies.get_current_user)):
     return current_user
 
+@router.put("/me", response_model=schemas.UserResponse)
+def update_users_me(
+    user_update: schemas.UserUpdate,
+    current_user: User = Depends(dependencies.get_current_user),
+    db: Session = Depends(get_db)
+):
+    if user_update.name is not None:
+        current_user.name = user_update.name
+    if user_update.phone_number is not None:
+        current_user.phone_number = user_update.phone_number
+    db.commit()
+    db.refresh(current_user)
+    return current_user
+
 @router.post("/forgot-password")
 def forgot_password(data: schemas.ForgotPassword, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.email == data.email).first()

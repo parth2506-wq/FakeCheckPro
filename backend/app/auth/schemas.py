@@ -5,7 +5,12 @@ from datetime import datetime
 class UserBase(BaseModel):
     name: str
     email: EmailStr
+    phone_number: Optional[str] = None
     language: Optional[str] = "English"
+
+class UserUpdate(BaseModel):
+    name: Optional[str] = None
+    phone_number: Optional[str] = None
 
 class UserCreate(UserBase):
     password: str

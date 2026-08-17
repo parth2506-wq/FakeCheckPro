@@ -30,8 +30,9 @@ async def predict_image(file: UploadFile = File(...)):
         # 1. OCR Extract
         extracted_text = await OCRService.extract_text(file)
         
-        # 2. Predict using common service
-        prediction_result = PredictionService.predict(
+        # 2. Predict using Multilingual Service (which wraps common PredictionService)
+        from app.services.multilingual_analysis_service import MultilingualAnalysisService
+        prediction_result = MultilingualAnalysisService.process_and_predict(
             title="", 
             text=extracted_text, 
             source_type="image"
@@ -48,7 +49,11 @@ async def predict_image(file: UploadFile = File(...)):
             confidence_percentage=prediction_result["confidence_percentage"],
             reason=prediction_result["reason"],
             important_phrases=prediction_result["important_phrases"],
-            history_id=None
+            history_id=None,
+            original_text=prediction_result.get("original_text"),
+            translated_text=prediction_result.get("translated_text"),
+            detected_language=prediction_result.get("detected_language"),
+            translation_status=prediction_result.get("translation_status")
         )
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))

@@ -1,5 +1,6 @@
 import os
 import httpx
+from curl_cffi.requests import AsyncSession
 import trafilatura
 from urllib.parse import urlparse
 from app.utils.url_validator import is_safe_url
@@ -15,8 +16,8 @@ class ArticleExtractor:
         max_bytes = max_size_mb * 1024 * 1024
 
         try:
-            # We use a custom httpx client to respect redirects safely and enforce size limits
-            async with httpx.AsyncClient(timeout=timeout_seconds, follow_redirects=True, max_redirects=3) as client:
+            # We use curl_cffi to spoof browser TLS fingerprints and bypass advanced anti-bot protections (e.g. Cloudflare)
+            async with AsyncSession(impersonate="chrome110", timeout=timeout_seconds, max_redirects=3) as client:
                 response = await client.get(url)
                 response.raise_for_status()
 
@@ -58,11 +59,8 @@ class ArticleExtractor:
                     "source_domain": domain
                 }
                 
-        except httpx.HTTPStatusError as e:
-            raise ValueError(f"HTTP error occurred: {e.response.status_code}")
-        except httpx.RequestError:
-            raise ValueError("Failed to connect or connection timed out.")
         except Exception as e:
             if isinstance(e, ValueError):
                 raise e
+            # Log or catch curl_cffi specific errors if needed, otherwise fallback to generic exception
             raise ValueError(f"Article extraction failed: {str(e)}")

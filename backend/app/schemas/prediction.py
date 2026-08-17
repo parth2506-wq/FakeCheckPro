@@ -29,6 +29,12 @@ class PredictionResponse(BaseModel):
     reason: str
     important_phrases: List[ImportantPhrase]
     history_id: Optional[int] = None
+    
+    # Multilingual Layer
+    original_text: Optional[str] = None
+    translated_text: Optional[str] = None
+    detected_language: Optional[str] = None
+    translation_status: Optional[str] = None
 
 class HealthResponse(BaseModel):
     status: str

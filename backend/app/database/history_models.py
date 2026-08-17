@@ -19,6 +19,14 @@ class PredictionHistory(HistoryBase):
     confidence = Column(Float)
     reason = Column(Text)
     important_phrases = Column(JSON) # List of dictionaries
+    
+    # Multilingual Layer
+    original_text = Column(Text, nullable=True)
+    detected_language = Column(String, nullable=True)
+    translated_text = Column(Text, nullable=True)
+    translation_status = Column(String, nullable=True)
+    user_output_language = Column(String, nullable=True)
+
     saved = Column(Boolean, default=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now(), index=True)
 

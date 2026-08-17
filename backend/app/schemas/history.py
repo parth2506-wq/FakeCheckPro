@@ -17,6 +17,13 @@ class HistoryCreate(BaseModel):
     confidence: float
     reason: str
     important_phrases: List[ImportantPhrase]
+    
+    # Multilingual Layer
+    original_text: Optional[str] = None
+    detected_language: Optional[str] = None
+    translated_text: Optional[str] = None
+    translation_status: Optional[str] = None
+    user_output_language: Optional[str] = None
 
 class HistoryResponse(BaseModel):
     id: int
@@ -32,6 +39,14 @@ class HistoryResponse(BaseModel):
     confidence: float
     reason: str
     important_phrases: List[ImportantPhrase]
+    
+    # Multilingual Layer
+    original_text: Optional[str] = None
+    detected_language: Optional[str] = None
+    translated_text: Optional[str] = None
+    translation_status: Optional[str] = None
+    user_output_language: Optional[str] = None
+
     saved: bool = False
     created_at: datetime
 

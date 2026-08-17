@@ -3,6 +3,10 @@ from typing import List, Optional
 
 class EvidenceRequest(BaseModel):
     text: str = Field(..., description="The original input text to analyze")
+    translated_text: Optional[str] = Field(None, description="The English translation of the text if applicable")
+    detected_language: Optional[str] = Field(None, description="The language code of the original text")
+    ml_result: Optional[dict] = Field(None, description="The ML prediction result")
+    user_output_language: Optional[str] = Field("en", description="The requested language for the AI explanation")
 
 class Source(BaseModel):
     title: str
@@ -37,6 +41,9 @@ class EvidenceSummaryCounts(BaseModel):
 class EvidenceResult(BaseModel):
     verification_status: str
     evidence_score: int
+    evidence_direction: str = Field(description="SUPPORTING, CONTRADICTING, MIXED, or INSUFFICIENT")
+    evidence_quality: str = Field(description="HIGH, MEDIUM, or LOW")
+    source_reliability_score: float = Field(description="Overall reliability of sources (0-100)")
     summary: str
     claims: List[Claim] = []
     source_summary: SourceSummary
