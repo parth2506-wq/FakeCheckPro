@@ -10,7 +10,7 @@ const History = () => {
   const [error, setError] = useState(null);
   const [activeFilter, setActiveFilter] = useState('All Analysis');
 
-  const filters = ['All Analysis', 'Real', 'Partially True', 'Fake', 'Saved'];
+  const filters = ['All Analysis', 'Credible', 'Unverified', 'Misleading', 'Saved'];
 
   useEffect(() => {
     fetchHistory();
@@ -56,12 +56,20 @@ const History = () => {
 
   const filteredItems = useMemo(() => {
     switch (activeFilter) {
-      case 'Real':
-        return items.filter(item => item.category === 'Real');
-      case 'Fake':
-        return items.filter(item => item.category === 'Fake');
-      case 'Partially True':
-        return []; // No logic yet, just raw UI
+      case 'Credible':
+        return items.filter(item => 
+          item.final_assessment === 'SUPPORTED' || 
+          item.final_assessment === 'LIKELY_CREDIBLE' || 
+          (!item.final_assessment && item.category === 'Real')
+        );
+      case 'Misleading':
+        return items.filter(item => 
+          item.final_assessment === 'LIKELY_MISLEADING' || 
+          item.final_assessment === 'CONTRADICTED' || 
+          (!item.final_assessment && item.category === 'Fake')
+        );
+      case 'Unverified':
+        return items.filter(item => item.final_assessment === 'UNVERIFIED');
       case 'Saved':
         return items.filter(item => item.saved);
       default:
@@ -143,13 +151,36 @@ const History = () => {
                   </div>
                   
                   <div className="flex items-center gap-4 shrink-0 mt-3 sm:mt-0">
-                    <div className="flex flex-col items-end">
-                      <span className={`text-sm font-bold ${item.category === 'Fake' ? 'text-red-500' : 'text-green-500'}`}>
-                        {item.category === 'Fake' ? 'Fake News' : 'Real News'}
+                    <div className="flex flex-col items-end text-right">
+                      <span className={`text-sm font-bold ${
+                        !item.risk_level ? 'text-brand-gray' :
+                        item.risk_level.includes('HIGH') ? 'text-red-500' :
+                        item.risk_level.includes('MODERATE') ? 'text-orange-500' :
+                        item.risk_level.includes('LOW') ? 'text-green-500' : 'text-brand-gray'
+                      }`}>
+                        {item.final_assessment || (item.category === 'Fake' ? 'Fake News' : 'Real News')}
                       </span>
-                      <span className="text-xs text-brand-gray font-medium">
-                        {item.confidence_percentage || (item.confidence ? (item.confidence * 100).toFixed(1) : 0)}% Confidence
-                      </span>
+                      {item.credibility_score !== null && item.credibility_score !== undefined ? (
+                        <div className="flex items-center gap-1 mt-0.5">
+                          <span className="text-xs font-bold text-brand-navy">
+                            {Number(item.credibility_score).toFixed(2)} <span className="text-brand-gray/60 font-medium">/ 100</span>
+                          </span>
+                        </div>
+                      ) : (
+                        <span className="text-xs text-brand-gray font-medium mt-0.5">
+                          {item.confidence_percentage || (item.confidence ? (item.confidence * 100).toFixed(1) : 0)}% Confidence
+                        </span>
+                      )}
+                      
+                      {item.risk_level && (
+                        <span className="text-[10px] text-brand-gray font-medium uppercase tracking-wider mt-0.5">
+                          Risk Score • <span className={`${
+                            item.risk_level.includes('HIGH') ? 'text-red-500' :
+                            item.risk_level.includes('MODERATE') ? 'text-orange-500' :
+                            item.risk_level.includes('LOW') ? 'text-green-500' : 'text-brand-gray'
+                          }`}>{item.risk_level}</span>
+                        </span>
+                      )}
                     </div>
                     
                     <div className="flex items-center gap-1 border-l border-brand-navy/10 pl-4 ml-2">

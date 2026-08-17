@@ -27,6 +27,12 @@ class PredictionHistory(HistoryBase):
     translation_status = Column(String, nullable=True)
     user_output_language = Column(String, nullable=True)
 
+    # Credibility Assessment
+    credibility_score = Column(Float, nullable=True)
+    risk_level = Column(String, nullable=True)
+    final_assessment = Column(String, nullable=True)
+    signal_relationship = Column(String, nullable=True)
+
     saved = Column(Boolean, default=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now(), index=True)
 

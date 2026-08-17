@@ -24,6 +24,12 @@ class HistoryCreate(BaseModel):
     translated_text: Optional[str] = None
     translation_status: Optional[str] = None
     user_output_language: Optional[str] = None
+    
+    # Credibility Assessment fields
+    credibility_score: Optional[float] = None
+    risk_level: Optional[str] = None
+    final_assessment: Optional[str] = None
+    signal_relationship: Optional[str] = None
 
 class HistoryResponse(BaseModel):
     id: int
@@ -46,6 +52,12 @@ class HistoryResponse(BaseModel):
     translated_text: Optional[str] = None
     translation_status: Optional[str] = None
     user_output_language: Optional[str] = None
+
+    # Credibility Assessment fields
+    credibility_score: Optional[float] = None
+    risk_level: Optional[str] = None
+    final_assessment: Optional[str] = None
+    signal_relationship: Optional[str] = None
 
     saved: bool = False
     created_at: datetime

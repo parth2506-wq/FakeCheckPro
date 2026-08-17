@@ -24,7 +24,11 @@ class HistoryService:
             detected_language=record.detected_language,
             translated_text=record.translated_text,
             translation_status=record.translation_status,
-            user_output_language=record.user_output_language
+            user_output_language=record.user_output_language,
+            credibility_score=record.credibility_score,
+            risk_level=record.risk_level,
+            final_assessment=record.final_assessment,
+            signal_relationship=record.signal_relationship
         )
         db.add(db_record)
         db.commit()

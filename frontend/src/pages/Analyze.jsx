@@ -85,7 +85,7 @@ const Analyze = () => {
       }
 
       // Save to History DB
-      if (response.raw_evidence_result && response.raw_ml_result && response.raw_ml_result.success) {
+      if (response.raw_ml_result) {
         const mlResponse = response.raw_ml_result;
         // Construct HistoryCreate equivalent
         const mlData = {
@@ -97,14 +97,18 @@ const Analyze = () => {
           extracted_text: textToAnalyze,
           prediction: mlResponse.prediction,
           category: mlResponse.category,
-          confidence: mlResponse.confidence,
+          confidence: (mlResponse.confidence_percentage / 100) || mlResponse.confidence || 0,
           reason: mlResponse.reason,
           important_phrases: mlResponse.important_phrases,
           original_text: mlResponse.original_text,
           translated_text: mlResponse.translated_text,
           detected_language: mlResponse.detected_language,
           translation_status: mlResponse.translation_status,
-          user_output_language: userOutputLanguage
+          user_output_language: userOutputLanguage,
+          credibility_score: response.final_credibility_risk_score,
+          risk_level: response.risk_level,
+          final_assessment: response.final_assessment,
+          signal_relationship: response.signal_relationship
         };
         
         await saveToHistory(orderId, mlData, response.raw_evidence_result);

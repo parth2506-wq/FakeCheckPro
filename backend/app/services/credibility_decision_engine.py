@@ -87,6 +87,8 @@ class CredibilityDecisionEngine:
         if evidence_score is None or evidence_direction == "INSUFFICIENT":
             # Instruction 15: VERY HIGH ML + VERY LOW EVIDENCE -> UNVERIFIED
             return {
+                "ml_prediction": ml_prediction,
+                "ml_confidence": ml_confidence,
                 "ml_fake_risk": ml_fake_risk,
                 "evidence_fake_risk": None,
                 "final_credibility_risk_score": ml_fake_risk,
