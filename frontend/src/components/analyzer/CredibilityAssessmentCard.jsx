@@ -112,7 +112,7 @@ const CredibilityAssessmentCard = ({ data }) => {
           <div className="mt-2">
             <div className="flex items-baseline gap-2">
               <span className={`text-5xl font-black tracking-tighter ${getRiskColor(risk_level)}`}>
-                {final_credibility_risk_score}
+                {Math.round(final_credibility_risk_score * 10) / 10}
               </span>
               <span className="text-lg font-medium text-slate-400">/ 100</span>
             </div>

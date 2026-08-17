@@ -55,8 +55,13 @@ export const AuthProvider = ({ children }) => {
     return response.data;
   };
 
+  const changePassword = async (passwordData) => {
+    const response = await api.post('/auth/change-password', passwordData);
+    return response.data;
+  };
+
   return (
-    <AuthContext.Provider value={{ user, token, isAuthenticated, isLoading, login, register, logout, updateProfile }}>
+    <AuthContext.Provider value={{ user, token, isAuthenticated, isLoading, login, register, logout, updateProfile, changePassword }}>
       {children}
     </AuthContext.Provider>
   );

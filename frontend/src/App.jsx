@@ -12,6 +12,7 @@ import Analyze from './pages/Analyze';
 import History from './pages/History';
 import HowItWorks from './pages/HowItWorks';
 import Profile from './pages/Profile';
+import ChangePassword from './pages/ChangePassword';
 
 const PublicRoute = ({ children }) => {
   const { isAuthenticated, isLoading } = useAuth();
@@ -53,6 +54,7 @@ const AppRoutes = () => {
         <Route path="/history" element={<History />} />
         <Route path="/how-it-works" element={<HowItWorks />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/change-password" element={<ChangePassword />} />
       </Route>
       
       <Route path="*" element={<Navigate to="/dashboard" replace />} />

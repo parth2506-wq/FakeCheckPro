@@ -46,7 +46,7 @@ const Profile = () => {
         <div className="flex items-start justify-between mb-8">
           <div className="flex items-center gap-6">
             <div className="w-24 h-24 rounded-3xl bg-brand-navy text-white flex items-center justify-center text-4xl font-bold shadow-xl shadow-brand-navy/20">
-              {user?.name?.charAt(0).toUpperCase() || 'U'}
+              {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
             </div>
             <div>
               {isEditing ? (

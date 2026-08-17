@@ -13,7 +13,7 @@ const resources = {
         logout: "Log Out"
       },
       header: {
-        aiVerification: "AI Verification"
+        aiVerification: "3 Layer robust Evaluation"
       },
       analyze: {
         title: "Content Verification Engine",
@@ -71,7 +71,7 @@ const resources = {
         logout: "लॉग आउट"
       },
       header: {
-        aiVerification: "एआई सत्यापन"
+        aiVerification: "3 स्तरीय मजबूत मूल्यांकन"
       },
       analyze: {
         title: "सामग्री सत्यापन इंजन",
@@ -129,7 +129,7 @@ const resources = {
         logout: "लॉग आउट"
       },
       header: {
-        aiVerification: "एआय पडताळणी"
+        aiVerification: "3 स्तरीय भक्कम मूल्यमापन"
       },
       analyze: {
         title: "सामग्री पडताळणी इंजिन",

@@ -83,3 +83,20 @@ def reset_password(data: schemas.ResetPassword, db: Session = Depends(get_db)):
     # In a real app, verify the token and update the password.
     # Here, we'll just mock it.
     return {"message": "Password reset successfully."}
+
+@router.post("/change-password")
+def change_password(
+    data: schemas.ChangePassword,
+    current_user: User = Depends(dependencies.get_current_user),
+    db: Session = Depends(get_db)
+):
+    if not hashing.verify_password(data.current_password, current_user.password_hash):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Incorrect password"
+        )
+    
+    hashed_password = hashing.get_password_hash(data.new_password)
+    current_user.password_hash = hashed_password
+    db.commit()
+    return {"message": "Password updated successfully."}

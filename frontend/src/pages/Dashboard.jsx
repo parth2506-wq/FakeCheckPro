@@ -87,9 +87,12 @@ const Dashboard = () => {
               Here's a snapshot of your verification activity.
             </p>
           </div>
-          <button className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-brand-gray/20 bg-white/50 text-brand-navy hover:bg-white transition-all shadow-sm">
+          <button 
+            onClick={() => window.print()}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-brand-gray/20 bg-white/50 text-brand-navy hover:bg-white transition-all shadow-sm print:hidden"
+          >
             <Download size={18} />
-            <span className="font-medium">Download CSV</span>
+            <span className="font-medium">Download PDF</span>
           </button>
         </div>
 

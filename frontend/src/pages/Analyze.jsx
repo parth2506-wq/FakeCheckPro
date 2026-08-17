@@ -254,7 +254,16 @@ const Analyze = () => {
                     </button>
                   </div>
                   
-                  <div id="printable-report" ref={reportRef} className="flex flex-col gap-6 bg-slate-50/50 p-2 sm:p-4 rounded-2xl">
+                  <div id="printable-report" ref={reportRef} className="flex flex-col gap-6 bg-slate-50/50 p-2 sm:p-4 rounded-2xl relative">
+                    
+                    {/* Probable Source Header */}
+                    <div className="flex justify-start w-full mb-[-1rem] z-10 relative pl-4">
+                      <div className="bg-brand-navy text-white text-xs px-3 py-1.5 rounded-full shadow-md flex items-center gap-1.5 border border-white/20">
+                         <span className="text-brand-orange font-bold">Probable Source:</span> 
+                         <span className="font-medium text-white/90">{evidenceData?.evidence?.probable_source || "Unknown"}</span>
+                      </div>
+                    </div>
+
                     <CredibilityAssessmentCard data={credibilityData} />
                     
                     <PredictionCard result={result} />

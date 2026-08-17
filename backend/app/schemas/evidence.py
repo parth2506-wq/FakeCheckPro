@@ -40,6 +40,7 @@ class EvidenceSummaryCounts(BaseModel):
 
 class EvidenceResult(BaseModel):
     verification_status: str
+    probable_source: Optional[str] = Field(None, description="The probable news organization, publisher, or handle that originally created this content, if identifiable.")
     evidence_score: int
     evidence_direction: str = Field(description="SUPPORTING, CONTRADICTING, MIXED, or INSUFFICIENT")
     evidence_quality: str = Field(description="HIGH, MEDIUM, or LOW")

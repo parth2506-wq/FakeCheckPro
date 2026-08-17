@@ -61,7 +61,9 @@ class TranslationService:
             translated_chunks = []
             for chunk in chunks:
                 if chunk.strip():
-                    translated_chunks.append(translator.translate(chunk))
+                    translated = translator.translate(chunk)
+                    if translated:
+                        translated_chunks.append(translated)
             
             translated_text = " ".join(translated_chunks)
                 

@@ -47,6 +47,7 @@ class GeminiEvidenceService:
         3. Evidence Quality
         4. Source Reliability Score
         5. Verification Status
+        6. Probable Source (The news handle, organization, or publisher that likely originated the article/content based on its text, tone, or stated affiliations. If unknown, return null.)
 
         EVIDENCE DIRECTION must describe the relationship between reliable external evidence and the submitted article's important claims.
         - SUPPORTING: Reliable evidence substantially supports the central claims.
@@ -151,19 +152,50 @@ class GeminiEvidenceService:
             # We use the official GenAI SDK (google-genai).
             # The gemini-3.6-flash model is requested.
             # We will ask for JSON structured output matching the EvidenceResult schema.
+            schema_instruction = """
+CRITICAL: You MUST return ONLY valid JSON. Your response must be parseable by json.loads(). Use this exact structure:
+{
+  "verification_status": "string",
+  "probable_source": "string or null",
+  "evidence_score": 0,
+  "evidence_direction": "string",
+  "evidence_quality": "string",
+  "source_reliability_score": 0.0,
+  "summary": "string",
+  "claims": [{"claim_id": "string", "claim_text": "string", "importance": "string", "status": "string", "support_score": 0.0, "contradiction_score": 0.0, "evidence": [{"title": "string", "publisher": "string", "url": "string", "published_date": "string", "source_tier": 0, "source_reliability_score": 0.0, "relevance": "string", "stance": "string", "reason": "string"}]}],
+  "source_summary": {"high_reliability_sources": 0, "medium_reliability_sources": 0, "low_reliability_sources": 0},
+  "evidence_summary": {"supporting": 0, "contradicting": 0, "neutral": 0},
+  "reasoning": ["string"],
+  "limitations": ["string"]
+}
+Do NOT wrap the JSON in markdown blocks. Output only the JSON.
+"""
             response = self.client.models.generate_content(
-                model='gemini-3.6-flash',
+                model='gemini-2.5-flash',
                 contents=prompt,
                 config=types.GenerateContentConfig(
-                    system_instruction=system_instruction,
-                    # tools=[{"google_search": {}}], # Temporarily disabled to test quota
-                    response_mime_type="application/json",
-                    response_schema=EvidenceResult,
+                    system_instruction=system_instruction + "\n\n" + schema_instruction,
+                    tools=[{"google_search": {}}],
                     temperature=0.2
                 )
             )
 
-            result_json = response.text
+            try:
+                result_json = response.text.strip()
+            except ValueError:
+                result_json = ""
+                
+            logger.error(f"DEBUG RESPONSE: {response}")
+            logger.error(f"DEBUG TEXT: {result_json}")
+
+            if result_json.startswith("```json"):
+                result_json = result_json[7:]
+            if result_json.startswith("```"):
+                result_json = result_json[3:]
+            if result_json.endswith("```"):
+                result_json = result_json[:-3]
+            result_json = result_json.strip()
+
             result_data = json.loads(result_json)
             result_data["verification_timestamp"] = datetime.utcnow().isoformat() + "Z"
             
