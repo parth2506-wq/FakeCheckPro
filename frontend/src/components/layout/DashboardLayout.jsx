@@ -1,8 +1,9 @@
 import React from 'react';
 import Sidebar from './Sidebar';
 import Header from './Header';
+import Chatbot from '../chatbot/Chatbot';
 
-const DashboardLayout = ({ children, title }) => {
+const DashboardLayout = ({ children, title, evidenceData }) => {
   return (
     <div className="flex h-screen print:h-auto w-full relative overflow-hidden print:overflow-visible bg-brand-beige">
       {/* Dynamic Background */}
@@ -25,6 +26,7 @@ const DashboardLayout = ({ children, title }) => {
           </div>
         </div>
       </main>
+      <Chatbot evidenceData={evidenceData} />
     </div>
   );
 };

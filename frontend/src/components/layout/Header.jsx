@@ -74,7 +74,7 @@ const Header = ({ title }) => {
                 onClick={() => setShowDropdown(false)}
               >
                 <Settings size={16} />
-                Profile
+                {t('header.profile')}
               </Link>
               <Link 
                 to="/change-password" 
@@ -82,7 +82,7 @@ const Header = ({ title }) => {
                 onClick={() => setShowDropdown(false)}
               >
                 <Key size={16} />
-                Change Password
+                {t('header.changePassword')}
               </Link>
               <div className="border-t border-gray-100 my-1"></div>
               <button 
@@ -90,7 +90,7 @@ const Header = ({ title }) => {
                 className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors text-left"
               >
                 <LogOut size={16} />
-                Log Out
+                {t('header.logout')}
               </button>
             </div>
           )}

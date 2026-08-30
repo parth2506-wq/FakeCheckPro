@@ -11,8 +11,10 @@ import Dashboard from './pages/Dashboard';
 import Analyze from './pages/Analyze';
 import History from './pages/History';
 import HowItWorks from './pages/HowItWorks';
+import FAQ from './pages/FAQ';
 import Profile from './pages/Profile';
 import ChangePassword from './pages/ChangePassword';
+import LiveNews from './pages/LiveNews';
 
 const PublicRoute = ({ children }) => {
   const { isAuthenticated, isLoading } = useAuth();
@@ -52,7 +54,9 @@ const AppRoutes = () => {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/analyze" element={<Analyze />} />
         <Route path="/history" element={<History />} />
+        <Route path="/live-news" element={<LiveNews />} />
         <Route path="/how-it-works" element={<HowItWorks />} />
+        <Route path="/faq" element={<FAQ />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/change-password" element={<ChangePassword />} />
       </Route>

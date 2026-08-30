@@ -1,80 +1,159 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import DashboardLayout from '../components/layout/DashboardLayout';
-import GlassCard from '../components/ui/GlassCard';
-import { Type, ArrowDown, Settings2, Database, Cpu, PieChart } from 'lucide-react';
+import { UploadCloud, Cpu, Search, Scale, FileText, Bot, ArrowDown } from 'lucide-react';
 
 const HowItWorks = () => {
+  const { t } = useTranslation();
   const steps = [
     {
-      icon: Type,
-      title: 'Article Input',
-      description: 'You provide a news headline and the main body text of an article for analysis.',
-      dark: false
-    },
-    {
-      icon: Settings2,
-      title: 'Text Processing',
-      description: 'The system cleans the text exactly like it did during model training (lowercasing, removing HTML/URLs, filtering out non-alphabetic characters, and applying NLTK lemmatization).',
-      dark: false
-    },
-    {
-      icon: Database,
-      title: 'TF-IDF Vectorization',
-      description: 'The cleaned text is transformed into a numerical format based on Term Frequency-Inverse Document Frequency, highlighting the unique vocabulary of the article.',
-      dark: false
+      icon: UploadCloud,
+      title: t('howItWorks.step1Title'),
+      description: t('howItWorks.step1Desc'),
+      layer: null,
+      theme: 'light'
     },
     {
       icon: Cpu,
-      title: 'Logistic Regression',
-      description: 'The trained machine learning classifier evaluates the mathematical features and predicts whether the article is Fake or Real.',
-      dark: true // using dark feature card style for the core ML step
+      title: t('howItWorks.step2Title'),
+      description: t('howItWorks.step2Desc'),
+      layer: t('howItWorks.layer1'),
+      theme: 'orange'
     },
     {
-      icon: PieChart,
-      title: 'Explainability',
-      description: 'The system traces the prediction back to the original TF-IDF features to show exactly which phrases most heavily influenced the result.',
-      dark: false
+      icon: Search,
+      title: t('howItWorks.step3Title'),
+      description: t('howItWorks.step3Desc'),
+      layer: t('howItWorks.layer2'),
+      theme: 'blue'
+    },
+    {
+      icon: Scale,
+      title: t('howItWorks.step4Title'),
+      description: t('howItWorks.step4Desc'),
+      layer: t('howItWorks.layer3'),
+      theme: 'green'
+    },
+    {
+      icon: FileText,
+      title: t('howItWorks.step5Title'),
+      description: t('howItWorks.step5Desc'),
+      layer: null,
+      theme: 'light'
+    },
+    {
+      icon: Bot,
+      title: t('howItWorks.step6Title'),
+      description: t('howItWorks.step6Desc'),
+      layer: null,
+      theme: 'purple'
     }
   ];
 
-  return (
-    <DashboardLayout title="How It Works">
-      <div className="max-w-3xl pb-12">
-        <p className="text-brand-navy/70 mb-10 text-lg">
-          FakeCheckPro uses a traditional, highly-interpretable Natural Language Processing pipeline instead of a black-box LLM. Here is exactly what happens when you click Analyze.
-        </p>
+  const getThemeStyles = (theme) => {
+    switch (theme) {
+      case 'orange':
+        return 'bg-[#1A2035] border-brand-orange/30 text-white shadow-[0_0_20px_rgba(255,107,53,0.15)] relative overflow-hidden';
+      case 'blue':
+        return 'bg-[#1A2035] border-blue-500/30 text-white shadow-[0_0_20px_rgba(59,130,246,0.15)] relative overflow-hidden';
+      case 'green':
+        return 'bg-[#1A2035] border-green-500/30 text-white shadow-[0_0_20px_rgba(34,197,94,0.15)] relative overflow-hidden';
+      case 'purple':
+        return 'bg-[#1A2035] border-purple-500/30 text-white shadow-[0_0_20px_rgba(168,85,247,0.15)] relative overflow-hidden';
+      case 'dark':
+        return 'bg-[#1A2035] border-white/10 text-white shadow-xl relative overflow-hidden';
+      default:
+        return 'bg-white/60 backdrop-blur-xl border-white/80 shadow-sm text-brand-navy';
+    }
+  };
 
-        <div className="flex flex-col gap-4">
+  const getIconStyles = (theme) => {
+    switch (theme) {
+      case 'orange': return 'bg-brand-orange/20 text-brand-orange shadow-[0_0_15px_rgba(255,107,53,0.2)]';
+      case 'blue': return 'bg-blue-500/20 text-blue-400 shadow-[0_0_15px_rgba(59,130,246,0.2)]';
+      case 'green': return 'bg-green-500/20 text-green-400 shadow-[0_0_15px_rgba(34,197,94,0.2)]';
+      case 'purple': return 'bg-purple-500/20 text-purple-400 shadow-[0_0_15px_rgba(168,85,247,0.2)]';
+      case 'dark': return 'bg-white/10 text-white shadow-[0_0_15px_rgba(255,255,255,0.1)]';
+      default: return 'bg-brand-orange/10 text-brand-orange shadow-sm';
+    }
+  };
+  
+  const getLayerBadgeStyles = (theme) => {
+    switch (theme) {
+      case 'orange': return 'bg-brand-orange/20 text-brand-orange border-brand-orange/30';
+      case 'blue': return 'bg-blue-500/20 text-blue-400 border-blue-500/30';
+      case 'green': return 'bg-green-500/20 text-green-400 border-green-500/30';
+      case 'purple': return 'bg-purple-500/20 text-purple-400 border-purple-500/30';
+      default: return 'bg-white/10 text-white border-white/20';
+    }
+  };
+
+  const getGlowColor = (theme) => {
+    switch (theme) {
+      case 'orange': return 'bg-brand-orange/20';
+      case 'blue': return 'bg-blue-500/20';
+      case 'green': return 'bg-green-500/20';
+      case 'purple': return 'bg-purple-500/20';
+      case 'dark': return 'bg-white/5';
+      default: return 'hidden';
+    }
+  };
+
+  return (
+    <DashboardLayout title={t("howItWorks.title")}>
+      <div className="max-w-4xl pb-16 mx-auto">
+        <div className="text-center mb-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
+          <h2 className="text-3xl font-bold text-brand-navy mb-4 tracking-tight">{t("howItWorks.pipeline")}</h2>
+          <p className="text-brand-gray text-lg max-w-2xl mx-auto">
+            {t("howItWorks.desc")}
+          </p>
+        </div>
+
+        <div className="flex flex-col gap-3 relative animate-in fade-in slide-in-from-bottom-8 duration-700">
+          {/* Continuous vertical line connecting the steps */}
+          <div className="absolute left-[39px] sm:left-[51px] top-10 bottom-10 w-0.5 bg-gradient-to-b from-brand-gray/20 via-brand-gray/40 to-brand-gray/20 hidden sm:block"></div>
+
           {steps.map((step, idx) => {
             const Icon = step.icon;
-            const isLast = idx === steps.length - 1;
+            const isDark = step.theme !== 'light';
             
             return (
-              <div key={idx} className="flex flex-col items-center">
-                <div className={`w-full p-6 rounded-2xl flex items-start gap-6 shadow-sm border ${step.dark ? 'bg-gradient-to-br from-[#1A2035] to-[#252C42] border-brand-navy/10 text-white shadow-xl relative overflow-hidden' : 'bg-white/60 backdrop-blur-xl border-white/80'}`}>
-                  
-                  {step.dark && <div className="absolute top-[-50%] right-[-10%] w-64 h-64 bg-brand-orange/20 blur-3xl rounded-full pointer-events-none" />}
-                  
-                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 relative z-10 ${step.dark ? 'bg-white/10 text-brand-orange' : 'bg-brand-peach/30 text-brand-orange'}`}>
-                    <Icon size={24} />
-                  </div>
-                  
-                  <div className="flex flex-col gap-1 relative z-10">
-                    <span className={`text-xs font-bold tracking-wider uppercase ${step.dark ? 'text-white/50' : 'text-brand-gray/60'}`}>
-                      Step 0{idx + 1}
-                    </span>
-                    <h3 className={`text-xl font-bold ${step.dark ? 'text-white' : 'text-brand-navy'}`}>
-                      {step.title}
-                    </h3>
-                    <p className={`mt-1 ${step.dark ? 'text-white/80' : 'text-brand-navy/70'}`}>
-                      {step.description}
-                    </p>
+              <div key={idx} className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 sm:gap-8 group">
+                
+                {/* Step Number / Icon Column */}
+                <div className="flex items-center gap-4 shrink-0 sm:w-20 sm:justify-end z-10">
+                  <div className={`w-12 h-12 sm:w-14 sm:h-14 rounded-2xl flex items-center justify-center shrink-0 border border-white/5 transition-transform duration-300 group-hover:scale-110 ${getIconStyles(step.theme)}`}>
+                    <Icon size={24} className="sm:w-7 sm:h-7" />
                   </div>
                 </div>
+                
+                {/* Content Card */}
+                <div className={`flex-1 p-5 sm:p-6 rounded-2xl flex flex-col gap-2 border transition-all duration-300 hover:shadow-lg ${getThemeStyles(step.theme)}`}>
+                  
+                  {isDark && (
+                    <div className={`absolute top-[-50%] right-[-10%] w-64 h-64 blur-[80px] rounded-full pointer-events-none ${getGlowColor(step.theme)}`} />
+                  )}
+                  
+                  <div className="flex items-center gap-3 relative z-10">
+                    <h3 className={`text-lg sm:text-xl font-bold ${isDark ? 'text-white' : 'text-brand-navy'}`}>
+                      {step.title}
+                    </h3>
+                    {step.layer && (
+                      <span className={`text-[10px] font-bold tracking-widest uppercase px-2 py-0.5 rounded-full border ${getLayerBadgeStyles(step.theme)}`}>
+                        {step.layer}
+                      </span>
+                    )}
+                  </div>
+                  
+                  <p className={`relative z-10 leading-relaxed text-sm sm:text-base ${isDark ? 'text-white/80' : 'text-brand-navy/70'}`}>
+                    {step.description}
+                  </p>
+                </div>
 
-                {!isLast && (
-                  <div className="py-2 text-brand-gray/30">
-                    <ArrowDown size={24} />
+                {/* Mobile-only connector */}
+                {idx < steps.length - 1 && (
+                  <div className="flex justify-center py-2 sm:hidden text-brand-gray/30">
+                    <ArrowDown size={20} />
                   </div>
                 )}
               </div>

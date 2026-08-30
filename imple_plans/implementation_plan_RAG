@@ -1,0 +1,68 @@
+# AI Chatbot Implementation (Context-Passing RAG)
+
+This implementation plan outlines the steps to build an AI Chatbot feature that allows users to interact with a lightweight model (e.g., `gemini-1.5-flash`) by passing the previously generated `EvidenceResult` JSON into the context window. This approach saves API costs and rate limits by avoiding re-analysis or web searches.
+
+## Proposed Changes
+
+### Backend (FastAPI)
+
+#### [NEW] `backend/app/schemas/chat.py`
+Create a Pydantic schema for the chat request and response.
+- `ChatMessage`: Represents a single message (role, content).
+- `ChatRequest`: Contains `history` (list of `ChatMessage`), `message` (string), `evidence_context` (dictionary), and `model_choice` (string).
+- `ChatResponse`: Contains the AI's response text.
+
+#### [NEW] `backend/app/services/chat_service.py`
+Create a service to handle the chat logic.
+- Initialize the `google-genai` client.
+- Construct a system prompt incorporating the `evidence_context` JSON.
+- Instruct the model to act as a Fact-Checking Dashboard assistant, answer strictly based on the provided JSON, and refuse to invent new facts or search the web.
+- Manage the conversation history and generate the AI response.
+
+#### [NEW] `backend/app/api/routes/chat.py`
+Create a FastAPI route for the chatbot.
+- Define a `POST /api/chat` endpoint.
+- Accept `ChatRequest` and return `ChatResponse`.
+- Call `chat_service.generate_chat_response`.
+
+#### [MODIFY] `backend/app/main.py`
+Register the new chat route.
+- Import `chat` from `app.api.routes`.
+- Add `app.include_router(chat.router)`.
+
+---
+
+### Frontend (React + Tailwind)
+
+#### [MODIFY] `frontend/src/services/api.js`
+Add the API call for the chat feature.
+- Create an `askChatbot(history, message, evidence_context, model_choice)` function that makes a POST request to `${API_BASE_URL}/chat`.
+
+#### [NEW] `frontend/src/components/chatbot/Chatbot.jsx`
+Create the floating or embedded chatbot component.
+- Implement state for messages, input, and loading status.
+- Design a premium, sleek UI using glassmorphism, rounded corners, and brand colors (Navy, Orange, Emerald, Slate).
+- Use `lucide-react` icons (Send, Bot, User).
+- Handle auto-scrolling using a `useRef` when new messages arrive.
+- Append user messages, show a loading state, call the API, and append the AI response.
+- Display a placeholder if `evidence_context` is missing (i.e., the user hasn't analyzed an article yet).
+
+#### [MODIFY] `frontend/src/pages/Analyze.jsx`
+Integrate the `Chatbot` component.
+- Import `Chatbot` and place it alongside the `ModelInfoCard` in the right sidebar, or below the main analysis results.
+- Pass the `evidenceData` state to the `Chatbot` as a prop.
+
+## User Review Required
+
+- **Placement**: Should the chatbot float persistently on the screen (e.g., fixed bottom-right), or should it live in the right sidebar column (e.g., above or below `ModelInfoCard` in `Analyze.jsx`)? Currently, I plan to place it in the right sidebar column for a cleaner integration.
+- **Model Choice**: By default, I will use `gemini-1.5-flash` as the lightweight model, but the `model_choice` parameter will allow flexibility. Is `gemini-1.5-flash` acceptable?
+
+## Verification Plan
+
+### Manual Verification
+- Start the backend and frontend development servers.
+- Submit an article for analysis to generate the `EvidenceResult`.
+- Send a message to the chatbot.
+- Verify that the chatbot responds based on the analysis context.
+- Try asking questions outside the context and ensure the chatbot refuses to answer.
+- Verify UI aesthetics and auto-scrolling behavior.

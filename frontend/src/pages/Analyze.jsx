@@ -125,7 +125,7 @@ const Analyze = () => {
     if (selectedMethod !== method) {
       setSelectedMethod(method);
       // We purposefully DO NOT clear the result here so the report stays visible
-      // until the user explicitly clicks "Analyze Another Article" or submits a new analysis.
+      // until the user explicitly clicks "{t("analyze.report.analyzeAnother")}" or submits a new analysis.
     }
   };
 
@@ -151,8 +151,8 @@ const Analyze = () => {
   };
 
   return (
-    <DashboardLayout title={t('sidebar.analyze')}>
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 pb-10">
+    <DashboardLayout title={t('analyze.title')} evidenceData={evidenceData}>
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 h-full pb-10">
         
         {/* Main Column */}
         <div className="lg:col-span-8 flex flex-col gap-6">
@@ -211,12 +211,12 @@ const Analyze = () => {
                       </div>
                     </div>
                     <div className="text-center space-y-2">
-                      <h3 className="text-xl font-bold text-brand-navy">Analyzing Credibility</h3>
+                      <h3 className="text-xl font-bold text-brand-navy">{t("analyze.report.analyzingCredibility")}</h3>
                       <p className="text-brand-gray font-medium">
-                        Running ML Classification & Evidence Intelligence Engine...
+                        {t("analyze.report.runningMl")}
                       </p>
                       <p className="text-xs text-brand-gray/60 uppercase tracking-widest font-semibold">
-                        This may take 10-20 seconds
+                        {t("analyze.report.mayTakeTime")}
                       </p>
                     </div>
                   </GlassCard>
@@ -242,7 +242,7 @@ const Analyze = () => {
                       className="flex items-center justify-center gap-1.5 px-3 py-1.5 text-sm bg-white/60 hover:bg-white text-brand-navy rounded-lg font-medium transition-colors border border-brand-gray/20 shadow-sm"
                     >
                       <RefreshCw size={14} />
-                      Analyze Another Article
+                      {t("analyze.report.analyzeAnother")}
                     </button>
                     
                     <button 
@@ -250,7 +250,7 @@ const Analyze = () => {
                       className="flex items-center justify-center gap-1.5 px-3 py-1.5 text-sm bg-brand-orange text-white rounded-lg font-medium hover:bg-[#d95f3b] transition-colors shadow-sm"
                     >
                       <Download size={14} />
-                      Download PDF Report
+                      {t("analyze.report.downloadPdf")}
                     </button>
                   </div>
                   
@@ -259,7 +259,7 @@ const Analyze = () => {
                     {/* Probable Source Header */}
                     <div className="flex justify-start w-full mb-[-1rem] z-10 relative pl-4">
                       <div className="bg-brand-navy text-white text-xs px-3 py-1.5 rounded-full shadow-md flex items-center gap-1.5 border border-white/20">
-                         <span className="text-brand-orange font-bold">Probable Source:</span> 
+                         <span className="text-brand-orange font-bold">{t("analyze.report.probableSource")}</span> 
                          <span className="font-medium text-white/90">{evidenceData?.evidence?.probable_source || "Unknown"}</span>
                       </div>
                     </div>
@@ -288,7 +288,7 @@ const Analyze = () => {
                       className="flex items-center justify-center gap-2 mx-auto text-sm font-medium text-brand-orange hover:text-[#d95f3b] transition-colors"
                     >
                       <RefreshCw size={14} />
-                      Analyze Another Article
+                      {t("analyze.report.analyzeAnother")}
                     </button>
                   </div>
                 </>
@@ -299,7 +299,7 @@ const Analyze = () => {
 
         {/* Right Sidebar Column */}
         <div className="lg:col-span-4 h-full">
-          <div className="sticky top-0 h-[600px]">
+          <div className="flex flex-col gap-6 sticky top-0">
             <ModelInfoCard />
           </div>
         </div>

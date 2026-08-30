@@ -1,8 +1,10 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import GlassCard from '../ui/GlassCard';
 import { BarChart3 } from 'lucide-react';
 
 const FeatureInfluence = ({ phrases }) => {
+  const { t } = useTranslation();
   if (!phrases || phrases.length === 0) return null;
 
   // Find the max contribution to scale the bars relative to each other
@@ -12,7 +14,7 @@ const FeatureInfluence = ({ phrases }) => {
     <GlassCard className="flex flex-col gap-4">
       <div className="flex items-center gap-2 text-brand-navy">
         <BarChart3 size={18} className="text-brand-orange" />
-        <h3 className="font-semibold text-lg">Feature Influence</h3>
+        <h3 className="font-semibold text-lg">{t('analyze.report.xai.featureInfluence')}</h3>
       </div>
       
       <div className="flex flex-col gap-3">

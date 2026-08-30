@@ -1,16 +1,18 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import DashboardLayout from '../components/layout/DashboardLayout';
 import GlassCard from '../components/ui/GlassCard';
 import { History as HistoryIcon, Trash2, Loader2, AlertCircle, ExternalLink, Bookmark } from 'lucide-react';
 import { getHistory, deleteHistory, toggleSaveHistory } from '../services/api';
 
 const History = () => {
+  const { t } = useTranslation();
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeFilter, setActiveFilter] = useState('All Analysis');
 
-  const filters = ['All Analysis', 'Credible', 'Unverified', 'Misleading', 'Saved'];
+  const filters = [t('history.filters.all'), t('history.filters.credible'), t('history.filters.unverified'), t('history.filters.misleading'), t('history.filters.saved')];
 
   useEffect(() => {
     fetchHistory();
@@ -29,7 +31,7 @@ const History = () => {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this record?")) return;
+    if (!window.confirm(t("history.deleteConfirm"))) return;
     try {
       await deleteHistory(id);
       setItems(items.filter(item => item.id !== id));
@@ -78,12 +80,12 @@ const History = () => {
   }, [items, activeFilter]);
 
   return (
-    <DashboardLayout title="Analysis History">
+    <DashboardLayout title={t("history.title")}>
       <div className="flex flex-col gap-6 pb-10">
         <GlassCard className="flex flex-col border-b border-brand-orange/10">
           <div className="mb-4">
-            <h2 className="text-xl font-semibold text-brand-navy tracking-tight mb-1">Your Analyses</h2>
-            <p className="text-sm text-brand-navy/60">A record of past articles, URLs, and images you've analyzed.</p>
+            <h2 className="text-xl font-semibold text-brand-navy tracking-tight mb-1">{t("history.analyses")}</h2>
+            <p className="text-sm text-brand-navy/60">{t("history.analysesDesc")}</p>
           </div>
 
           <div className="flex flex-wrap items-center gap-2 mb-6">
@@ -105,7 +107,7 @@ const History = () => {
           {loading ? (
             <div className="flex flex-col items-center justify-center py-20">
               <Loader2 size={32} className="text-brand-orange animate-spin mb-4" />
-              <p className="text-sm text-brand-gray">Loading history...</p>
+              <p className="text-sm text-brand-gray">{t('history.loading')}</p>
             </div>
           ) : error ? (
             <div className="bg-red-50/80 backdrop-blur-md border border-red-100 p-4 rounded-2xl flex items-center gap-3 text-red-600 shadow-sm">
@@ -117,14 +119,14 @@ const History = () => {
               <div className="w-16 h-16 rounded-2xl bg-white/50 flex items-center justify-center text-brand-gray/40 mb-6 shadow-sm border border-white">
                 <HistoryIcon size={32} />
               </div>
-              <h3 className="text-lg font-medium text-brand-navy mb-2">No analyses yet</h3>
+              <h3 className="text-lg font-medium text-brand-navy mb-2">{t('history.noAnalyses')}</h3>
               <p className="text-sm text-brand-gray max-w-sm">
-                Your analyzed articles will appear here once you start using the Analyze News tool.
+                {t('history.noAnalysesDesc')}
               </p>
             </div>
           ) : filteredItems.length === 0 ? (
              <div className="flex flex-col items-center justify-center py-20 text-center">
-              <p className="text-sm text-brand-gray">No items found for filter: {activeFilter}</p>
+              <p className="text-sm text-brand-gray">{t('history.noItemsFilter')} {activeFilter}</p>
             </div>
           ) : (
             <div className="flex flex-col gap-3">
@@ -140,7 +142,7 @@ const History = () => {
                       </span>
                     </div>
                     <h4 className="text-base font-semibold text-brand-navy truncate">
-                      {item.title || item.url || "Untitled Analysis"}
+                      {item.title || item.url || t("history.untitled")}
                     </h4>
                     {item.source_type === 'url' && item.url && (
                       <a href={item.url} target="_blank" rel="noopener noreferrer" className="text-xs text-brand-orange hover:underline flex items-center gap-1 mt-1 truncate max-w-md inline-block">
@@ -158,7 +160,7 @@ const History = () => {
                         item.risk_level.includes('MODERATE') ? 'text-orange-500' :
                         item.risk_level.includes('LOW') ? 'text-green-500' : 'text-brand-gray'
                       }`}>
-                        {item.final_assessment || (item.category === 'Fake' ? 'Fake News' : 'Real News')}
+                        {item.final_assessment || (item.category === 'Fake' ? t('history.fakeNews') : t('history.realNews'))}
                       </span>
                       {item.credibility_score !== null && item.credibility_score !== undefined ? (
                         <div className="flex items-center gap-1 mt-0.5">
@@ -168,13 +170,13 @@ const History = () => {
                         </div>
                       ) : (
                         <span className="text-xs text-brand-gray font-medium mt-0.5">
-                          {item.confidence_percentage || (item.confidence ? (item.confidence * 100).toFixed(1) : 0)}% Confidence
+                          {item.confidence_percentage || (item.confidence ? (item.confidence * 100).toFixed(1) : 0)}% {t('history.confidence')}
                         </span>
                       )}
                       
                       {item.risk_level && (
                         <span className="text-[10px] text-brand-gray font-medium uppercase tracking-wider mt-0.5">
-                          Risk Score • <span className={`${
+                          {t('history.riskScore')} • <span className={`${
                             item.risk_level.includes('HIGH') ? 'text-red-500' :
                             item.risk_level.includes('MODERATE') ? 'text-orange-500' :
                             item.risk_level.includes('LOW') ? 'text-green-500' : 'text-brand-gray'
@@ -187,14 +189,14 @@ const History = () => {
                       <button 
                         onClick={() => handleToggleSave(item.id)}
                         className={`p-2 rounded-lg transition-colors ${item.saved ? 'text-brand-orange bg-brand-orange/10' : 'text-brand-gray hover:text-brand-orange hover:bg-orange-50'}`}
-                        title={item.saved ? "Unsave Record" : "Save Record"}
+                        title={item.saved ? t("history.unsave") : t("history.save")}
                       >
                         <Bookmark size={18} fill={item.saved ? "currentColor" : "none"} />
                       </button>
                       <button 
                         onClick={() => handleDelete(item.id)}
                         className="p-2 text-brand-gray hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                        title="Delete Record"
+                        title={t("history.delete")}
                       >
                         <Trash2 size={18} />
                       </button>

@@ -241,3 +241,46 @@ export const saveToHistory = async (orderId, mlData, llmData) => {
     throw error;
   }
 };
+
+export const askChatbot = async (history, message, evidenceContext, modelChoice = 'gemma-4-31b-it') => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/chat/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        history,
+        message,
+        evidence_context: evidenceContext,
+        model_choice: modelChoice
+      }),
+    });
+
+    if (!response.ok) {
+      const data = await response.json();
+      throw new Error(data.detail || `Server returned ${response.status}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getLiveNews = async () => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/live-news`, {
+      method: 'GET',
+    });
+
+    if (!response.ok) {
+      const data = await response.json();
+      throw new Error(data.detail?.error?.message || `Server returned ${response.status}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw error;
+  }
+};

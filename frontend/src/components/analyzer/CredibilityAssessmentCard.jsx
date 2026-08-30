@@ -1,8 +1,10 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import GlassCard from '../ui/GlassCard';
 import { AlertTriangle, CheckCircle, ShieldAlert, FileSearch, Scale, Info } from 'lucide-react';
 
 const CredibilityAssessmentCard = ({ data }) => {
+  const { t } = useTranslation();
   if (!data) return null;
 
   const {
@@ -23,7 +25,7 @@ const CredibilityAssessmentCard = ({ data }) => {
           bgColor: 'bg-emerald-50 border-emerald-100',
           textColor: 'text-emerald-700',
           titleColor: 'text-emerald-800',
-          label: 'Supported / Credible'
+          label: t('analyze.report.xai.supported')
         };
       case 'LIKELY_CREDIBLE':
         return {
@@ -31,7 +33,7 @@ const CredibilityAssessmentCard = ({ data }) => {
           bgColor: 'bg-emerald-50/50 border-emerald-100',
           textColor: 'text-emerald-600',
           titleColor: 'text-emerald-700',
-          label: 'Likely Credible'
+          label: t('analyze.report.xai.likelyCredible')
         };
       case 'CONTRADICTED':
         return {
@@ -39,7 +41,7 @@ const CredibilityAssessmentCard = ({ data }) => {
           bgColor: 'bg-red-50 border-red-100',
           textColor: 'text-red-700',
           titleColor: 'text-red-800',
-          label: 'Contradicted / High Risk'
+          label: t('analyze.report.xai.contradicted')
         };
       case 'LIKELY_MISLEADING':
         return {
@@ -47,7 +49,7 @@ const CredibilityAssessmentCard = ({ data }) => {
           bgColor: 'bg-orange-50 border-orange-100',
           textColor: 'text-brand-orange',
           titleColor: 'text-orange-800',
-          label: 'Likely Misleading'
+          label: t('analyze.report.xai.likelyMisleading')
         };
       case 'UNVERIFIED':
       default:
@@ -56,7 +58,7 @@ const CredibilityAssessmentCard = ({ data }) => {
           bgColor: 'bg-slate-50 border-slate-200',
           textColor: 'text-slate-600',
           titleColor: 'text-slate-800',
-          label: 'Unverified / Inconclusive'
+          label: t('analyze.report.xai.unverified')
         };
     }
   };
@@ -79,12 +81,35 @@ const CredibilityAssessmentCard = ({ data }) => {
 
   const formatSignal = (signal) => {
     switch (signal) {
-      case 'AGREE_FAKE': return 'Signals Align (High Risk)';
-      case 'AGREE_REAL': return 'Signals Align (Low Risk)';
-      case 'CONFLICT': return 'Conflicting Signals Detected';
-      case 'INSUFFICIENT_EVIDENCE': return 'Insufficient External Evidence';
+      case 'AGREE_FAKE': return t('analyze.report.xai.signalsAlignHigh');
+      case 'AGREE_REAL': return t('analyze.report.xai.signalsAlignLow');
+      case 'CONFLICT': return t('analyze.report.xai.conflictingSignals');
+      case 'INSUFFICIENT_EVIDENCE': return t('analyze.report.xai.insufficientEvidence');
       default: return signal.replace(/_/g, ' ');
     }
+  };
+
+  const getDecisionReasonTranslation = (reason) => {
+    const reasonMap = {
+      "No reliable evidence was found to corroborate or contradict the claims.": "noEvidence",
+      "High ML risk was detected, but external evidence is insufficient to independently establish falsity.": "highMlNoEvidenceFake",
+      "ML model indicates a risk level, but available external evidence is insufficient to independently establish falsity.": "mlRiskNoEvidence",
+      "Final assessment derived from weighted combination of ML and external evidence.": "weightedCombination",
+      "Strong external evidence directly contradicts the claims, overriding other signals.": "strongEvidenceContradicts",
+      "Strong external evidence overrides ML classification.": "strongEvidenceOverridesMl",
+      "Strong external evidence supports the central claims despite high ML risk.": "strongEvidenceSupportsDespiteMl",
+      "Strong external evidence corroborates the claims.": "strongEvidenceCorroborates",
+      "ML classification indicates high risk, while available external evidence is weak and insufficient for a definitive contradiction.": "highMlWeakEvidence",
+      "External evidence is weak and insufficient for a definitive conclusion.": "weakEvidence",
+      "External evidence is mixed, but the ML classifier identifies strong linguistic risk.": "mixedEvidenceHighMl",
+      "External evidence contains meaningful support and contradiction. Manual review recommended.": "mixedEvidenceReview",
+      "External evidence provides meaningful support, but the ML classifier identifies strong linguistic risk.": "supportEvidenceHighMl",
+      "External evidence contradicts the claim, but the ML classifier suggests low risk.": "contradictEvidenceLowMl",
+      "Signals are aligned and weighted calculation determines the final assessment.": "signalsAligned"
+    };
+
+    const key = reasonMap[reason];
+    return key ? t(`analyze.report.xai.decisionReasons.${key}`) : reason;
   };
 
   const config = getAssessmentConfig(final_assessment);
@@ -97,7 +122,7 @@ const CredibilityAssessmentCard = ({ data }) => {
         <div className="flex-1 flex flex-col items-center md:items-start text-center md:text-left md:border-r border-slate-200/60 md:pr-6">
           <h2 className="text-sm font-bold uppercase tracking-widest text-slate-400 mb-4 flex items-center justify-center md:justify-start gap-2">
             <Scale className="w-4 h-4" />
-            Final Credibility Assessment
+            {t('analyze.report.xai.finalAssessment')}
           </h2>
           
           <div className="flex items-center gap-4 mb-3">
@@ -117,7 +142,7 @@ const CredibilityAssessmentCard = ({ data }) => {
               <span className="text-lg font-medium text-slate-400">/ 100</span>
             </div>
             <p className="text-sm font-medium text-slate-500 uppercase tracking-wide mt-1">
-              Credibility Risk Score &bull; <span className={getRiskColor(risk_level)}>{formatRiskLevel(risk_level)}</span>
+              {t('analyze.report.xai.credibilityRiskScore')} &bull; <span className={getRiskColor(risk_level)}>{formatRiskLevel(risk_level)}</span>
             </p>
           </div>
         </div>
@@ -126,28 +151,32 @@ const CredibilityAssessmentCard = ({ data }) => {
         <div className="flex-[1.5] flex flex-col gap-4">
           
           <div className="bg-white/60 rounded-xl p-4 border border-white/80 shadow-sm">
-            <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Decision Reasoning</h4>
+            <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">{t('analyze.report.xai.decisionReasoning')}</h4>
             <p className="text-brand-navy font-medium leading-relaxed">
-              {decision_reason}
+              {getDecisionReasonTranslation(decision_reason)}
             </p>
           </div>
 
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex-1 bg-white/40 rounded-lg px-4 py-3 border border-white/60">
-              <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Signal Relationship</span>
+              <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">{t('analyze.report.xai.signalRelationship')}</span>
               <span className="text-sm font-semibold text-slate-700">{formatSignal(signal_relationship)}</span>
             </div>
             <div className="flex-1 bg-white/40 rounded-lg px-4 py-3 border border-white/60">
-              <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Calculation Base</span>
+              <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">{t('analyze.report.xai.calculationBase')}</span>
               <span className="text-sm font-semibold text-slate-700">
-                40% ML + 60% Evidence
+                {t('analyze.report.xai.baseSplit')}
               </span>
             </div>
           </div>
           
           <div className="flex items-start gap-2 text-xs text-slate-500 mt-1">
             <Info className="w-3.5 h-3.5 shrink-0 mt-0.5" />
-            <p>{explanation}</p>
+            <p>
+              {explanation === "The Final Credibility Risk Score is an AI-assisted composite risk indicator derived from content-based ML classification and external evidence assessment. It is not a statistical probability of factual falsity or truth." 
+                ? t('analyze.report.xai.aiAssisted') 
+                : explanation}
+            </p>
           </div>
           
         </div>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { LayoutDashboard, ScanSearch, History, User, Info, LogOut } from 'lucide-react';
+import { LayoutDashboard, ScanSearch, History, User, Info, LogOut, HelpCircle, Globe } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useTranslation } from 'react-i18next';
 
@@ -12,11 +12,13 @@ const Sidebar = () => {
   const mainLinks = [
     { name: t('sidebar.dashboard'), path: '/dashboard', icon: LayoutDashboard },
     { name: t('sidebar.analyze'), path: '/analyze', icon: ScanSearch },
+    { name: t('sidebar.liveNews', 'Live News'), path: '/live-news', icon: Globe },
     { name: t('sidebar.history'), path: '/history', icon: History },
   ];
 
   const systemLinks = [
     { name: t('sidebar.howItWorks'), path: '/how-it-works', icon: Info },
+    { name: t('sidebar.faq', 'FAQ'), path: '/faq', icon: HelpCircle },
     { name: t('sidebar.profile', 'Profile'), path: '/profile', icon: User },
   ];
 
@@ -52,7 +54,7 @@ const Sidebar = () => {
       <div className="flex-1 flex flex-col gap-8">
         {/* Main Menu */}
         <div>
-          <h3 className="text-xs font-semibold text-brand-gray/60 uppercase tracking-wider px-4 mb-3">Main Menu</h3>
+          <h3 className="text-xs font-semibold text-brand-gray/60 uppercase tracking-wider px-4 mb-3">{t('sidebar.mainMenu')}</h3>
           <nav className="flex flex-col gap-1">
             {mainLinks.map(link => <NavItem key={link.name} item={link} />)}
           </nav>
@@ -60,7 +62,7 @@ const Sidebar = () => {
 
         {/* System Menu */}
         <div>
-          <h3 className="text-xs font-semibold text-brand-gray/60 uppercase tracking-wider px-4 mb-3">System</h3>
+          <h3 className="text-xs font-semibold text-brand-gray/60 uppercase tracking-wider px-4 mb-3">{t('sidebar.system')}</h3>
           <nav className="flex flex-col gap-1">
             {systemLinks.map(link => <NavItem key={link.name} item={link} />)}
           </nav>

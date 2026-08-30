@@ -40,7 +40,7 @@ const Profile = () => {
 
 
   return (
-    <DashboardLayout title="Profile">
+    <DashboardLayout title={t("profile.title")}>
       <div className="max-w-4xl mx-auto py-8">
         {/* Header Section */}
         <div className="flex items-start justify-between mb-8">
@@ -76,14 +76,14 @@ const Profile = () => {
                   className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white text-brand-gray border border-brand-gray/20 hover:bg-gray-50 transition-colors"
                 >
                   <X size={18} />
-                  <span>Cancel</span>
+                  <span>{t("profile.cancel")}</span>
                 </button>
                 <button
                   onClick={handleSave}
                   className="flex items-center gap-2 px-4 py-2 rounded-xl bg-brand-orange text-white shadow-lg shadow-brand-orange/20 hover:bg-orange-500 transition-colors"
                 >
                   <Check size={18} />
-                  <span>Save</span>
+                  <span>{t("profile.save")}</span>
                 </button>
               </div>
             ) : (
@@ -101,14 +101,14 @@ const Profile = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <GlassCard className="flex flex-col gap-1 p-5 border border-white/40 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
              <div className="flex items-center gap-2 text-brand-gray/60 mb-2 text-sm font-medium uppercase tracking-wider">
-               <span>Email</span>
+               <span>{t("profile.email")}</span>
              </div>
              <div className="text-brand-navy font-semibold text-lg">{user?.email}</div>
           </GlassCard>
 
           <GlassCard className="flex flex-col gap-1 p-5 border border-white/40 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
             <div className="flex items-center gap-2 text-brand-gray/60 mb-2 text-sm font-medium uppercase tracking-wider">
-              <span>Phone</span>
+              <span>{t("profile.phone")}</span>
             </div>
             {isEditing ? (
               <input
@@ -116,7 +116,7 @@ const Profile = () => {
                 value={editForm.phone_number}
                 onChange={(e) => setEditForm(prev => ({ ...prev, phone_number: e.target.value }))}
                 className="bg-white/50 border border-brand-gray/20 rounded-lg px-3 py-2 text-brand-navy focus:outline-none focus:ring-2 focus:ring-brand-orange/50 w-full"
-                placeholder="Enter your phone"
+                placeholder={t("profile.enterPhone")}
               />
             ) : (
               <div className="text-brand-navy font-semibold text-lg">{user?.phone_number || '—'}</div>
@@ -125,30 +125,30 @@ const Profile = () => {
 
           <GlassCard className="flex flex-col gap-1 p-5 border border-white/40 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
              <div className="flex items-center gap-2 text-brand-gray/60 mb-2 text-sm font-medium uppercase tracking-wider">
-               <span>Language</span>
+               <span>{t("profile.language")}</span>
              </div>
              <div className="text-brand-navy font-semibold text-lg">{currentLanguage}</div>
           </GlassCard>
 
           <GlassCard className="flex flex-col gap-1 p-5 border border-white/40 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
              <div className="flex items-center gap-2 text-brand-gray/60 mb-2 text-sm font-medium uppercase tracking-wider">
-               <span>Member Since</span>
+               <span>{t("profile.memberSince")}</span>
              </div>
              <div className="text-brand-navy font-semibold text-lg">{memberSince}</div>
           </GlassCard>
 
           <GlassCard className="flex flex-col gap-1 p-5 border border-white/40 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
              <div className="flex items-center gap-2 text-brand-gray/60 mb-2 text-sm font-medium uppercase tracking-wider">
-               <span>Notifications</span>
+               <span>{t("profile.notifications")}</span>
              </div>
-             <div className="text-brand-navy font-semibold text-lg">On</div>
+             <div className="text-brand-navy font-semibold text-lg">{t("profile.on")}</div>
           </GlassCard>
 
           <GlassCard className="flex flex-col gap-1 p-5 border border-white/40 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
              <div className="flex items-center gap-2 text-brand-gray/60 mb-2 text-sm font-medium uppercase tracking-wider">
-               <span>Privacy</span>
+               <span>{t("profile.privacy")}</span>
              </div>
-             <div className="text-brand-navy font-semibold text-lg">Private</div>
+             <div className="text-brand-navy font-semibold text-lg">{t("profile.private")}</div>
           </GlassCard>
         </div>
       </div>

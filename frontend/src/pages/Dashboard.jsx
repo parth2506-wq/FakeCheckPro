@@ -56,20 +56,20 @@ const Dashboard = () => {
 
   if (loading) {
     return (
-      <DashboardLayout title={t('dashboard.title', 'Dashboard')}>
+      <DashboardLayout title={t('dashboard.title')}>
         <div className="flex items-center justify-center h-full">Loading...</div>
       </DashboardLayout>
     );
   }
 
   return (
-    <DashboardLayout title={t('dashboard.title', 'Dashboard')}>
+    <DashboardLayout title={t('dashboard.title')}>
       <div className="flex flex-col gap-6 pb-10 max-w-7xl mx-auto">
         
         {/* Header Section */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-2">
           <div>
-            <h1 className="text-sm font-semibold text-brand-gray/60 tracking-widest uppercase mb-2">Welcome</h1>
+            <h1 className="text-sm font-semibold text-brand-gray/60 tracking-widest uppercase mb-2">{t("dashboard.welcome")}</h1>
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 rounded-xl bg-brand-orange flex items-center justify-center shadow-lg shadow-brand-orange/30">
                 <ScanSearch size={26} className="text-white" />
@@ -79,12 +79,12 @@ const Dashboard = () => {
                   {user?.name}
                 </h2>
                 <div className="text-lg font-medium text-brand-navy/80 flex items-center gap-1.5 leading-none">
-                  <span className="text-brand-gray/60 font-normal italic">to</span> FakeCheckPro
+                  <span className="text-brand-gray/60 font-normal italic">{t("dashboard.to")}</span> FakeCheckPro
                 </div>
               </div>
             </div>
             <p className="text-brand-gray mt-4 text-lg">
-              Here's a snapshot of your verification activity.
+              {t("dashboard.snapshot")}
             </p>
           </div>
           <button 
@@ -92,7 +92,7 @@ const Dashboard = () => {
             className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-brand-gray/20 bg-white/50 text-brand-navy hover:bg-white transition-all shadow-sm print:hidden"
           >
             <Download size={18} />
-            <span className="font-medium">Download PDF</span>
+            <span className="font-medium">{t("dashboard.downloadPdf")}</span>
           </button>
         </div>
 
@@ -101,38 +101,38 @@ const Dashboard = () => {
           <GlassCard className="flex flex-col p-5 border border-white/40 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
             <div className="text-brand-navy mb-2"><TrendingUp size={24} /></div>
             <div className="text-3xl font-black text-brand-navy mb-1">{stats?.total_checks || 0}</div>
-            <div className="text-xs font-semibold text-brand-gray/60 uppercase tracking-widest">Total Checks</div>
+            <div className="text-xs font-semibold text-brand-gray/60 uppercase tracking-widest">{t("dashboard.totalChecks")}</div>
           </GlassCard>
 
           <GlassCard className="flex flex-col p-5 border border-emerald-500/20 bg-emerald-50/50 shadow-[0_8px_30px_rgb(16,185,129,0.1)]">
             <div className="text-emerald-500 mb-2"><ShieldCheck size={24} /></div>
             <div className="text-3xl font-black text-emerald-600 mb-1">{stats?.real || 0}</div>
-            <div className="text-xs font-semibold text-emerald-600/60 uppercase tracking-widest">Real</div>
+            <div className="text-xs font-semibold text-emerald-600/60 uppercase tracking-widest">{t("dashboard.real")}</div>
           </GlassCard>
 
           <GlassCard className="flex flex-col p-5 border border-amber-500/20 bg-amber-50/50 shadow-[0_8px_30px_rgb(245,158,11,0.1)]">
             <div className="text-amber-500 mb-2"><AlertCircle size={24} /></div>
             <div className="text-3xl font-black text-amber-600 mb-1">{stats?.partial || 0}</div>
-            <div className="text-xs font-semibold text-amber-600/60 uppercase tracking-widest">Partially True</div>
+            <div className="text-xs font-semibold text-amber-600/60 uppercase tracking-widest">{t("dashboard.partiallyTrue")}</div>
           </GlassCard>
 
           <GlassCard className="flex flex-col p-5 border border-red-500/20 bg-red-50/50 shadow-[0_8px_30px_rgb(239,68,68,0.1)]">
             <div className="text-red-500 mb-2"><XCircle size={24} /></div>
             <div className="text-3xl font-black text-red-600 mb-1">{stats?.fake || 0}</div>
-            <div className="text-xs font-semibold text-red-600/60 uppercase tracking-widest">Fake</div>
+            <div className="text-xs font-semibold text-red-600/60 uppercase tracking-widest">{t("dashboard.fake")}</div>
           </GlassCard>
 
           <GlassCard className="flex flex-col p-5 border border-white/40 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
             <div className="text-brand-gray mb-2"><Bookmark size={24} /></div>
             <div className="text-3xl font-black text-brand-navy mb-1">{stats?.saved_reports || 0}</div>
-            <div className="text-xs font-semibold text-brand-gray/60 uppercase tracking-widest">Saved Reports</div>
+            <div className="text-xs font-semibold text-brand-gray/60 uppercase tracking-widest">{t("dashboard.savedReports")}</div>
           </GlassCard>
         </div>
 
         {/* Charts Row 1 */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <GlassCard className="md:col-span-2 p-6 flex flex-col border border-white/40 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
-            <h3 className="text-xs font-semibold text-brand-gray/60 uppercase tracking-widest mb-6">Activity (14D)</h3>
+            <h3 className="text-xs font-semibold text-brand-gray/60 uppercase tracking-widest mb-6">{t("dashboard.activity")}</h3>
             <div className="flex-1 min-h-[250px]">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={stats?.activity || []} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
@@ -149,7 +149,7 @@ const Dashboard = () => {
           </GlassCard>
 
           <GlassCard className="p-6 flex flex-col border border-white/40 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
-            <h3 className="text-xs font-semibold text-brand-gray/60 uppercase tracking-widest mb-2">Real vs Partial vs Fake</h3>
+            <h3 className="text-xs font-semibold text-brand-gray/60 uppercase tracking-widest mb-2">{t("dashboard.realVsFake")}</h3>
             <div className="flex-1 min-h-[200px] flex items-center justify-center relative">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
@@ -174,7 +174,7 @@ const Dashboard = () => {
               </ResponsiveContainer>
             </div>
             <div className="text-center mt-2">
-              <span className="text-brand-gray text-sm">Avg. credibility: </span>
+              <span className="text-brand-gray text-sm">{t("dashboard.avgCredibility")} </span>
               <span className="font-bold text-brand-navy">{stats?.avg_credibility || 0} / 100</span>
             </div>
           </GlassCard>
@@ -183,7 +183,7 @@ const Dashboard = () => {
         {/* Charts Row 2 */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <GlassCard className="md:col-span-2 p-6 flex flex-col border border-white/40 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
-            <h3 className="text-xs font-semibold text-brand-gray/60 uppercase tracking-widest mb-6">Credibility Distribution</h3>
+            <h3 className="text-xs font-semibold text-brand-gray/60 uppercase tracking-widest mb-6">{t("dashboard.distribution")}</h3>
             <div className="flex-1 min-h-[200px]">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={stats?.distribution || []} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
@@ -205,7 +205,7 @@ const Dashboard = () => {
           </GlassCard>
 
           <GlassCard className="p-6 flex flex-col border border-white/40 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
-            <h3 className="text-xs font-semibold text-brand-gray/60 uppercase tracking-widest mb-6">Languages</h3>
+            <h3 className="text-xs font-semibold text-brand-gray/60 uppercase tracking-widest mb-6">{t("dashboard.languages")}</h3>
             <div className="flex flex-col gap-4 flex-1">
               {stats?.languages?.length > 0 ? (
                 stats.languages.map((lang, idx) => (
@@ -215,7 +215,7 @@ const Dashboard = () => {
                   </div>
                 ))
               ) : (
-                <div className="text-brand-gray text-sm">No data available</div>
+                <div className="text-brand-gray text-sm">{t("dashboard.noData")}</div>
               )}
             </div>
           </GlassCard>
@@ -255,7 +255,7 @@ const Dashboard = () => {
                 {trendingData?.trending_topics?.length > 0 && (
                   <GlassCard className="p-6 flex flex-col border border-white/40 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
                     <h3 className="text-xs font-semibold text-brand-gray/60 uppercase tracking-widest mb-4 flex items-center gap-2">
-                      GLOBAL TRENDING <span className="text-[#ef4444]">FAKE TOPICS</span> <span className="text-brand-gray/30">•</span> LAST 30D <span className="text-brand-gray/30">•</span> <span className="text-[#ef4444]">6 FLAGGED</span>
+                      {t("dashboard.globalTrending")} <span className="text-brand-gray/30">•</span> {t("dashboard.last30d")} <span className="text-brand-gray/30">•</span> <span className="text-[#ef4444]">{t("dashboard.flagged")}</span>
                     </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                       {trendingData.trending_topics.map((topic, idx) => (
@@ -273,7 +273,7 @@ const Dashboard = () => {
 
                 {trendingData?.trending_keywords?.length > 0 && (
                   <GlassCard className="p-6 flex flex-col border border-white/40 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
-                    <h3 className="text-xs font-semibold text-[#10b981] uppercase tracking-widest mb-4">TRENDING KEYWORDS</h3>
+                    <h3 className="text-xs font-semibold text-[#10b981] uppercase tracking-widest mb-4">{t("dashboard.trendingKeywords")}</h3>
                     <div className="flex flex-wrap gap-3">
                       {trendingData.trending_keywords.map((kw, idx) => (
                         <div key={idx} className="flex items-center gap-2 px-4 py-2 rounded-full border border-brand-gray/20 bg-white/50 text-sm">

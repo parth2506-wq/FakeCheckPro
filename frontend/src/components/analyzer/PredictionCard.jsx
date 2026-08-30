@@ -1,9 +1,11 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import GlassCard from '../ui/GlassCard';
 import ConfidenceBar from './ConfidenceBar';
 import { AlertTriangle, CheckCircle2 } from 'lucide-react';
 
 const PredictionCard = ({ result }) => {
+  const { t } = useTranslation();
   if (!result) return null;
 
   const isFake = result.prediction === 0;
@@ -18,14 +20,14 @@ const PredictionCard = ({ result }) => {
           {isFake ? <AlertTriangle size={24} /> : <CheckCircle2 size={24} />}
         </div>
         <div className="flex flex-col gap-1.5">
-          <h3 className="text-xs font-semibold text-brand-gray uppercase tracking-wider">Prediction Result</h3>
+          <h3 className="text-xs font-semibold text-brand-gray uppercase tracking-wider">{t('analyze.report.xai.predictionResult')}</h3>
           
           <div className="text-brand-navy text-lg font-medium">
-            The trained ML model indicates a higher likelihood of the '{isFake ? 'Fake' : 'Real'}' label, based on analysis across 60,000 vectorized features.
+            {t('analyze.report.xai.predictionDesc1')}'{isFake ? t('analyze.report.xai.fake') : t('analyze.report.xai.real')}'{t('analyze.report.xai.predictionDesc2')}
           </div>
 
           <p className="text-[13px] text-brand-gray/90 mt-1 leading-relaxed max-w-3xl">
-            <strong>Disclaimer:</strong> This application is an academic research project. The result above is purely a machine learning prediction based on statistical patterns learned from the WELFake dataset. It does <strong>not</strong> indicate factual truth or falsehood and should not be used as a definitive fact-checking source.
+            <strong>{t('analyze.report.xai.disclaimer')}</strong> {t('analyze.report.xai.disclaimerText')}
           </p>
         </div>
       </div>
