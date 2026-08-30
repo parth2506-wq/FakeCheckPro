@@ -101,12 +101,12 @@ const Chatbot = ({ evidenceData }) => {
                     key={index}
                     className={`flex items-start gap-3 ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}
                   >
-                    <div className={`shrink-0 p-2 rounded-full flex items-center justify-center shadow-sm ${msg.role === 'user' ? 'bg-brand-emerald text-white' : 'bg-white text-brand-navy border border-brand-gray/10'}`}>
+                    <div className={`shrink-0 p-2 rounded-full flex items-center justify-center shadow-sm ${msg.role === 'user' ? 'bg-brand-navy text-white' : 'bg-white text-brand-navy border border-brand-gray/10'}`}>
                       {msg.role === 'user' ? <User size={16} /> : <Bot size={16} className="text-brand-orange" />}
                     </div>
 
                     <div className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm shadow-sm ${msg.role === 'user'
-                        ? 'bg-brand-emerald text-white rounded-tr-sm'
+                        ? 'bg-brand-navy text-white rounded-tr-sm'
                         : 'bg-white text-brand-navy border border-brand-gray/10 rounded-tl-sm'
                       }`}>
                       <p className="whitespace-pre-wrap leading-relaxed">{msg.content}</p>
@@ -145,7 +145,7 @@ const Chatbot = ({ evidenceData }) => {
                     onChange={(e) => setInput(e.target.value)}
                     placeholder="Ask about the evidence..."
                     disabled={isLoading}
-                    className="w-full bg-slate-50 border border-brand-gray/20 rounded-full py-3 pl-4 pr-12 text-sm text-brand-navy placeholder-brand-gray focus:outline-none focus:ring-2 focus:ring-brand-emerald/20 transition-all disabled:opacity-50"
+                    className="w-full bg-slate-50 border border-brand-gray/20 rounded-full py-3 pl-4 pr-12 text-sm text-brand-navy placeholder-brand-gray focus:outline-none focus:ring-2 focus:ring-brand-orange/20 transition-all disabled:opacity-50"
                   />
                   <button
                     type="submit"
