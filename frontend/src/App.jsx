@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -23,11 +23,17 @@ const PublicRoute = ({ children }) => {
 };
 
 import Landing from './pages/Landing';
+import About from './pages/About';
+import ResearchDisclaimer from './pages/ResearchDisclaimer';
 import { useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 
 const AppRoutes = () => {
   const location = useLocation();
+  
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
   return (
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
@@ -36,6 +42,8 @@ const AppRoutes = () => {
             <Landing />
           </PublicRoute>
         } />
+        <Route path="/about" element={<About />} />
+        <Route path="/research-disclaimer" element={<ResearchDisclaimer />} />
 
         {/* Public Auth Routes */}
         <Route path="/login" element={

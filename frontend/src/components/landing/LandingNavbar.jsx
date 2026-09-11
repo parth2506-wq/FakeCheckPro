@@ -1,28 +1,42 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { ScanSearch, Sun, Moon } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
 
 const LandingNavbar = () => {
   const { theme, toggleTheme } = useTheme();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const scrollToTop = (e) => {
-    e.preventDefault();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (location.pathname !== '/') {
+      navigate('/');
+    } else {
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   };
 
   const scrollToSection = (e, id) => {
     e.preventDefault();
-    const element = document.getElementById(id);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
+    if (location.pathname !== '/') {
+      navigate('/');
+      setTimeout(() => {
+        const element = document.getElementById(id);
+        if (element) element.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+    } else {
+      const element = document.getElementById(id);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
     }
   };
 
   return (
     <nav className="fixed top-0 left-0 w-full z-50 transition-all duration-300 bg-white/10 dark:bg-[#0B0E13]/60 backdrop-blur-md border-b border-white/20 dark:border-white/10">
       <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-        <a href="#" onClick={scrollToTop} className="flex items-center gap-3 group cursor-pointer">
+        <a href="/" onClick={scrollToTop} className="flex items-center gap-3 group cursor-pointer">
           <div className="w-10 h-10 rounded-xl bg-[var(--accent)] flex items-center justify-center shadow-lg shadow-[var(--accent-glow)] group-hover:scale-105 transition-transform">
             <ScanSearch size={22} className="text-white" />
           </div>
@@ -30,8 +44,10 @@ const LandingNavbar = () => {
         </a>
 
         <div className="hidden md:flex items-center gap-8 text-sm font-medium">
+          <Link to="/about" className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors cursor-pointer">About</Link>
           <a href="#features" onClick={(e) => scrollToSection(e, 'features')} className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors cursor-pointer">Features</a>
           <a href="#technology" onClick={(e) => scrollToSection(e, 'technology')} className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors cursor-pointer">How It Works</a>
+          <Link to="/research-disclaimer" className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors cursor-pointer">Disclaimer</Link>
         </div>
 
         <div className="flex items-center gap-4">

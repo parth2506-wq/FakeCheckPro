@@ -32,9 +32,9 @@ const Footer = () => {
           <div>
             <h4 className="font-semibold text-[var(--text-primary)] mb-4">Legal</h4>
             <ul className="space-y-2 text-sm text-[var(--text-secondary)]">
-              <li><a href="#" className="hover:text-[var(--accent)] transition-colors">Privacy Policy</a></li>
-              <li><a href="#" className="hover:text-[var(--accent)] transition-colors">Terms of Service</a></li>
-              <li><a href="#" className="hover:text-[var(--accent)] transition-colors">Research Disclaimer</a></li>
+              <li><a href="#" onClick={(e) => e.preventDefault()} className="hover:text-[var(--accent)] transition-colors cursor-pointer">Privacy Policy</a></li>
+              <li><a href="#" onClick={(e) => e.preventDefault()} className="hover:text-[var(--accent)] transition-colors cursor-pointer">Terms of Service</a></li>
+              <li><Link to="/research-disclaimer" className="hover:text-[var(--accent)] transition-colors cursor-pointer">Research Disclaimer</Link></li>
             </ul>
           </div>
 

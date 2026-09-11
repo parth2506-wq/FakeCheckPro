@@ -8,9 +8,9 @@ import Footer from '../components/landing/Footer';
 
 const Landing = () => {
   return (
-    <PageTransition className="bg-brand-base min-h-screen relative overflow-hidden">
+    <PageTransition className="bg-brand-base min-h-screen relative">
       {/* Ambient background glow */}
-      <div className="absolute inset-0 z-0 pointer-events-none">
+      <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
         <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] rounded-full bg-brand-orange/5 blur-[120px]" />
         <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] rounded-full bg-blue-500/5 blur-[120px]" />
       </div>
