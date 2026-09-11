@@ -75,7 +75,7 @@ const ImageAnalyzer = ({ onResult, onError }) => {
               </label>
               
               <div 
-                className="w-full border-2 border-dashed border-brand-orange/30 bg-white/40 rounded-xl p-8 flex flex-col items-center justify-center gap-3 transition-all hover:bg-white/60 hover:border-brand-orange/50 cursor-pointer"
+                className="w-full border-2 border-dashed border-brand-orange/30 bg-white/40 dark:bg-white/90 rounded-xl p-8 flex flex-col items-center justify-center gap-3 transition-all hover:bg-white/60 dark:bg-white/90 hover:border-brand-orange/50 cursor-pointer"
                 onClick={() => fileInputRef.current?.click()}
               >
                 <UploadCloud size={32} className="text-brand-orange/70" />
@@ -84,7 +84,7 @@ const ImageAnalyzer = ({ onResult, onError }) => {
                   <p className="text-brand-gray text-xs mt-1">Supports JPG, PNG, WEBP (Max 10MB)</p>
                 </div>
                 {file && (
-                  <div className="mt-2 text-sm font-medium text-brand-navy bg-white/80 px-3 py-1 rounded-lg">
+                  <div className="mt-2 text-sm font-medium text-brand-navy bg-white/80 dark:bg-white/90 px-3 py-1 rounded-lg">
                     Selected: {file.name}
                   </div>
                 )}
@@ -119,7 +119,7 @@ const ImageAnalyzer = ({ onResult, onError }) => {
               <textarea
                 value={ocrPreview}
                 readOnly
-                className="w-full h-48 px-4 py-3 bg-white/50 border border-white rounded-xl outline-none resize-none text-brand-navy/80 text-sm shadow-sm"
+                className="w-full h-48 px-4 py-3 bg-white/50 dark:bg-white/90 border border-white dark:border-white/60 rounded-xl outline-none resize-none text-brand-navy/80 text-sm shadow-sm"
               />
             </div>
 

@@ -74,7 +74,7 @@ const PdfAnalyzer = ({ onResult, onError }) => {
         {!file && (
           <div 
             onClick={() => fileInputRef.current?.click()}
-            className="w-full h-48 border-2 border-dashed border-brand-orange/30 rounded-xl flex flex-col items-center justify-center gap-3 bg-white/40 hover:bg-white/60 hover:border-brand-orange/50 transition-all cursor-pointer cursor-pointer text-brand-navy shadow-sm"
+            className="w-full h-48 border-2 border-dashed border-brand-orange/30 rounded-xl flex flex-col items-center justify-center gap-3 bg-white/40 dark:bg-white/90 hover:bg-white/60 dark:bg-white/90 hover:border-brand-orange/50 transition-all cursor-pointer cursor-pointer text-brand-navy shadow-sm"
           >
             <div className="w-12 h-12 rounded-full bg-brand-orange/10 flex items-center justify-center text-brand-orange">
               <UploadCloud size={24} />
@@ -94,7 +94,7 @@ const PdfAnalyzer = ({ onResult, onError }) => {
         )}
 
         {isExtracting && (
-          <div className="flex flex-col items-center justify-center py-10 bg-white/40 rounded-xl border border-white">
+          <div className="flex flex-col items-center justify-center py-10 bg-white/40 dark:bg-white/90 rounded-xl border border-white dark:border-white/60">
             <Loader2 size={32} className="text-brand-orange animate-spin mb-4" />
             <p className="text-sm font-medium text-brand-navy">Extracting text from PDF...</p>
           </div>
@@ -102,7 +102,7 @@ const PdfAnalyzer = ({ onResult, onError }) => {
 
         {file && !isExtracting && (
           <div className="flex flex-col gap-4">
-            <div className="flex items-center justify-between p-3 bg-white/60 rounded-xl border border-white shadow-sm">
+            <div className="flex items-center justify-between p-3 bg-white/60 dark:bg-white/90 rounded-xl border border-white dark:border-white/60 shadow-sm">
               <div className="flex items-center gap-3 overflow-hidden">
                 <div className="p-2 bg-brand-orange/10 text-brand-orange rounded-lg">
                   <FileText size={20} />
@@ -128,7 +128,7 @@ const PdfAnalyzer = ({ onResult, onError }) => {
               <textarea
                 value={extractedText}
                 onChange={(e) => setExtractedText(e.target.value)}
-                className="w-full h-48 px-4 py-3 bg-white/50 border border-white focus:border-brand-orange focus:ring-2 focus:ring-brand-orange/20 rounded-xl outline-none transition-all resize-none text-sm text-brand-navy shadow-sm leading-relaxed"
+                className="w-full h-48 px-4 py-3 bg-white/50 dark:bg-white/90 border border-white dark:border-white/60 focus:border-brand-orange focus:ring-2 focus:ring-brand-orange/20 rounded-xl outline-none transition-all resize-none text-sm text-brand-navy shadow-sm leading-relaxed"
                 disabled={isAnalyzing}
               />
             </div>

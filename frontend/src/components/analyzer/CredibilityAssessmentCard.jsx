@@ -22,42 +22,42 @@ const CredibilityAssessmentCard = ({ data }) => {
       case 'STRONGLY_CREDIBLE':
         return {
           icon: <CheckCircle className="w-10 h-10 text-emerald-500" />,
-          bgColor: 'bg-emerald-50 border-emerald-100',
-          textColor: 'text-emerald-700',
-          titleColor: 'text-emerald-800',
+          bgColor: 'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-100 dark:border-emerald-500/30',
+          textColor: 'text-emerald-700 dark:text-emerald-400',
+          titleColor: 'text-emerald-800 dark:text-emerald-400 font-bold',
           label: t('analyze.report.xai.supported')
         };
       case 'LIKELY_CREDIBLE':
         return {
           icon: <CheckCircle className="w-10 h-10 text-emerald-400" />,
-          bgColor: 'bg-emerald-50/50 border-emerald-100',
-          textColor: 'text-emerald-600',
-          titleColor: 'text-emerald-700',
+          bgColor: 'bg-emerald-50/50 dark:bg-emerald-900/10 border-emerald-100 dark:border-emerald-500/20',
+          textColor: 'text-emerald-600 dark:text-emerald-400',
+          titleColor: 'text-emerald-700 dark:text-emerald-400 font-bold',
           label: t('analyze.report.xai.likelyCredible')
         };
       case 'CONTRADICTED':
         return {
           icon: <ShieldAlert className="w-10 h-10 text-red-500" />,
-          bgColor: 'bg-red-50 border-red-100',
-          textColor: 'text-red-700',
-          titleColor: 'text-red-800',
+          bgColor: 'bg-red-50 dark:bg-red-900/20 border-red-100 dark:border-red-500/30',
+          textColor: 'text-red-700 dark:text-red-400',
+          titleColor: 'text-red-800 dark:text-red-400 font-bold',
           label: t('analyze.report.xai.contradicted')
         };
       case 'LIKELY_MISLEADING':
         return {
           icon: <AlertTriangle className="w-10 h-10 text-brand-orange" />,
-          bgColor: 'bg-orange-50 border-orange-100',
-          textColor: 'text-brand-orange',
-          titleColor: 'text-orange-800',
+          bgColor: 'bg-orange-50 dark:bg-orange-900/20 border-orange-100 dark:border-orange-500/30',
+          textColor: 'text-brand-orange dark:text-orange-400',
+          titleColor: 'text-orange-800 dark:text-orange-400 font-bold',
           label: t('analyze.report.xai.likelyMisleading')
         };
       case 'UNVERIFIED':
       default:
         return {
-          icon: <FileSearch className="w-10 h-10 text-brand-gray" />,
-          bgColor: 'bg-slate-50 border-slate-200',
-          textColor: 'text-slate-600',
-          titleColor: 'text-slate-800',
+          icon: <FileSearch className="w-10 h-10 text-slate-400 dark:text-slate-300" />,
+          bgColor: 'bg-slate-50 dark:bg-slate-800/40 border-slate-200 dark:border-slate-600',
+          textColor: 'text-slate-600 dark:text-slate-300',
+          titleColor: 'text-slate-800 dark:text-white font-bold',
           label: t('analyze.report.xai.unverified')
         };
     }
@@ -150,7 +150,7 @@ const CredibilityAssessmentCard = ({ data }) => {
         {/* Right Side: Details & Reasoning */}
         <div className="flex-[1.5] flex flex-col gap-4">
           
-          <div className="bg-white/60 rounded-xl p-4 border border-white/80 shadow-sm">
+          <div className="bg-white/60 dark:bg-white/90 rounded-xl p-4 border border-white/80 dark:border-white/60 shadow-sm">
             <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">{t('analyze.report.xai.decisionReasoning')}</h4>
             <p className="text-brand-navy font-medium leading-relaxed">
               {getDecisionReasonTranslation(decision_reason)}
@@ -158,11 +158,11 @@ const CredibilityAssessmentCard = ({ data }) => {
           </div>
 
           <div className="flex flex-col sm:flex-row gap-4">
-            <div className="flex-1 bg-white/40 rounded-lg px-4 py-3 border border-white/60">
+            <div className="flex-1 bg-white/40 dark:bg-white/90 rounded-lg px-4 py-3 border border-white dark:border-white/60/60">
               <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">{t('analyze.report.xai.signalRelationship')}</span>
               <span className="text-sm font-semibold text-slate-700">{formatSignal(signal_relationship)}</span>
             </div>
-            <div className="flex-1 bg-white/40 rounded-lg px-4 py-3 border border-white/60">
+            <div className="flex-1 bg-white/40 dark:bg-white/90 rounded-lg px-4 py-3 border border-white dark:border-white/60/60">
               <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">{t('analyze.report.xai.calculationBase')}</span>
               <span className="text-sm font-semibold text-slate-700">
                 {t('analyze.report.xai.baseSplit')}

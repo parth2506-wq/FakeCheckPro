@@ -5,11 +5,13 @@ from datetime import datetime
 from google import genai
 from google.genai import types
 from app.schemas.evidence import EvidenceResult
+from dotenv import load_dotenv
 
 logger = logging.getLogger(__name__)
 
 class GeminiEvidenceService:
     def __init__(self):
+        load_dotenv(override=True)
         # Workaround for google-genai issue where it prioritizes GOOGLE_API_KEY over the explicitly passed key or GEMINI_API_KEY
         if "GOOGLE_API_KEY" in os.environ:
             del os.environ["GOOGLE_API_KEY"]

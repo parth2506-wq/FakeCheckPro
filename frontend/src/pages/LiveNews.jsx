@@ -12,9 +12,9 @@ const NewsSection = ({ categoryKey, title, articles }) => {
   if (!articles || articles.length === 0) {
     return (
       <div className="mb-12">
-        <h2 className="text-2xl font-bold text-brand-navy mb-6">{title}</h2>
-        <div className="bg-gray-50 rounded-2xl p-8 text-center border border-gray-100">
-          <p className="text-brand-gray">{t('liveNews.noNews', 'No news available in this category.')}</p>
+        <h2 className="text-2xl font-bold text-[var(--text-primary)] mb-6">{title}</h2>
+        <div className="bg-[var(--surface-elevated)] rounded-2xl p-8 text-center border border-[var(--border-color)]">
+          <p className="text-[var(--text-secondary)]">{t('liveNews.noNews', 'No news available in this category.')}</p>
         </div>
       </div>
     );
@@ -22,9 +22,9 @@ const NewsSection = ({ categoryKey, title, articles }) => {
 
   return (
     <div className="mb-12">
-      <h2 className="text-2xl font-bold text-brand-navy mb-6 flex items-center gap-3">
+      <h2 className="text-2xl font-bold text-[var(--text-primary)] mb-6 flex items-center gap-3">
         {title}
-        <span className="text-sm font-normal text-brand-gray bg-white px-3 py-1 rounded-full border border-gray-100">
+        <span className="text-sm font-normal text-[var(--text-secondary)] bg-[var(--surface)] px-3 py-1 rounded-full border border-[var(--border-color)]">
           {articles.length} {t('liveNews.articlesCount', 'Articles')}
         </span>
       </h2>
@@ -64,9 +64,9 @@ const LiveNews = () => {
     if (loading && !data) {
       return (
         <div className="flex flex-col items-center justify-center py-20">
-          <RefreshCw className="animate-spin text-brand-orange mb-4" size={32} />
-          <h3 className="text-xl font-medium text-brand-navy">{t('liveNews.loading', 'Loading Live News...')}</h3>
-          <p className="text-brand-gray mt-2">{t('liveNews.loadingDesc', 'Fetching the latest updates across the globe.')}</p>
+          <RefreshCw className="animate-spin text-[var(--accent)] mb-4" size={32} />
+          <h3 className="text-xl font-medium text-[var(--text-primary)]">{t('liveNews.loading', 'Loading Live News...')}</h3>
+          <p className="text-[var(--text-secondary)] mt-2">{t('liveNews.loadingDesc', 'Fetching the latest updates across the globe.')}</p>
         </div>
       );
     }
@@ -74,13 +74,13 @@ const LiveNews = () => {
     if (error) {
       return (
         <div className="flex flex-col items-center justify-center py-20">
-          <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mb-4">
-            <AlertCircle className="text-red-500" size={32} />
+          <div className="w-16 h-16 bg-[var(--danger-soft)] rounded-full flex items-center justify-center mb-4">
+            <AlertCircle className="text-[var(--danger)]" size={32} />
           </div>
-          <h3 className="text-xl font-medium text-brand-navy mb-2">{error}</h3>
+          <h3 className="text-xl font-medium text-[var(--text-primary)] mb-2">{error}</h3>
           <button 
             onClick={fetchNews}
-            className="flex items-center gap-2 px-6 py-3 bg-brand-navy text-white rounded-xl hover:bg-brand-navy/90 transition-colors mt-4"
+            className="flex items-center gap-2 px-6 py-3 bg-[var(--accent)] text-white rounded-xl hover:opacity-90 transition-opacity mt-4"
           >
             <RefreshCw size={18} />
             <span>{t('liveNews.retry', 'Retry')}</span>
@@ -120,7 +120,7 @@ const LiveNews = () => {
     <DashboardLayout title={t('liveNews.title', 'Live News')}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
-          <p className="text-lg text-brand-gray">
+          <p className="text-lg text-[var(--text-secondary)]">
             {t('liveNews.subtitle', 'Explore current news across major categories.')}
           </p>
         </div>

@@ -45,7 +45,7 @@ const Profile = () => {
         {/* Header Section */}
         <div className="flex items-start justify-between mb-8">
           <div className="flex items-center gap-6">
-            <div className="w-24 h-24 rounded-3xl bg-brand-navy text-white flex items-center justify-center text-4xl font-bold shadow-xl shadow-brand-navy/20">
+            <div className="w-24 h-24 rounded-3xl bg-[var(--accent)] text-white flex items-center justify-center text-4xl font-bold shadow-xl shadow-[var(--accent)]/20">
               {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
             </div>
             <div>
@@ -55,14 +55,14 @@ const Profile = () => {
                     type="text"
                     value={editForm.name}
                     onChange={(e) => setEditForm(prev => ({ ...prev, name: e.target.value }))}
-                    className="bg-white/50 border border-brand-gray/20 rounded-lg px-4 py-2 text-2xl font-bold text-brand-navy focus:outline-none focus:ring-2 focus:ring-brand-orange/50"
+                    className="bg-[var(--surface-elevated)] border border-[var(--border-color)] rounded-lg px-4 py-2 text-2xl font-bold text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)]/50"
                   />
-                  <div className="text-brand-gray">{user?.email}</div>
+                  <div className="text-[var(--text-secondary)]">{user?.email}</div>
                 </div>
               ) : (
                 <>
-                  <h1 className="text-3xl font-bold text-brand-navy">{user?.name}</h1>
-                  <div className="text-brand-gray mt-1">{user?.email}</div>
+                  <h1 className="text-3xl font-bold text-[var(--text-primary)]">{user?.name}</h1>
+                  <div className="text-[var(--text-secondary)] mt-1">{user?.email}</div>
                 </>
               )}
             </div>
@@ -73,14 +73,14 @@ const Profile = () => {
               <div className="flex items-center gap-3">
                 <button
                   onClick={handleCancel}
-                  className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white text-brand-gray border border-brand-gray/20 hover:bg-gray-50 transition-colors"
+                  className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[var(--surface)] text-[var(--text-primary)] border border-[var(--border-color)] hover:bg-[var(--surface-elevated)] transition-colors"
                 >
                   <X size={18} />
                   <span>{t("profile.cancel")}</span>
                 </button>
                 <button
                   onClick={handleSave}
-                  className="flex items-center gap-2 px-4 py-2 rounded-xl bg-brand-orange text-white shadow-lg shadow-brand-orange/20 hover:bg-orange-500 transition-colors"
+                  className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[var(--accent)] text-white shadow-lg shadow-[var(--accent)]/20 hover:opacity-90 transition-opacity"
                 >
                   <Check size={18} />
                   <span>{t("profile.save")}</span>
@@ -89,7 +89,7 @@ const Profile = () => {
             ) : (
               <button
                 onClick={() => setIsEditing(true)}
-                className="flex items-center justify-center w-12 h-12 rounded-full bg-white text-brand-gray border border-white/40 shadow-sm hover:shadow-md transition-all hover:text-brand-navy"
+                className="flex items-center justify-center w-12 h-12 rounded-full bg-[var(--surface)] text-[var(--text-primary)] border border-[var(--border-color)] shadow-sm hover:shadow-md transition-all hover:text-[var(--accent)]"
               >
                 <Edit2 size={20} />
               </button>
@@ -99,15 +99,15 @@ const Profile = () => {
 
         {/* Grid Section */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <GlassCard className="flex flex-col gap-1 p-5 border border-white/40 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
-             <div className="flex items-center gap-2 text-brand-gray/60 mb-2 text-sm font-medium uppercase tracking-wider">
+          <GlassCard className="flex flex-col gap-1 p-5 border border-[var(--border-color)] shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+             <div className="flex items-center gap-2 text-[var(--text-muted)] mb-2 text-sm font-medium uppercase tracking-wider">
                <span>{t("profile.email")}</span>
              </div>
-             <div className="text-brand-navy font-semibold text-lg">{user?.email}</div>
+             <div className="text-[var(--text-primary)] font-semibold text-lg">{user?.email}</div>
           </GlassCard>
 
-          <GlassCard className="flex flex-col gap-1 p-5 border border-white/40 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
-            <div className="flex items-center gap-2 text-brand-gray/60 mb-2 text-sm font-medium uppercase tracking-wider">
+          <GlassCard className="flex flex-col gap-1 p-5 border border-[var(--border-color)] shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+            <div className="flex items-center gap-2 text-[var(--text-muted)] mb-2 text-sm font-medium uppercase tracking-wider">
               <span>{t("profile.phone")}</span>
             </div>
             {isEditing ? (
@@ -115,40 +115,40 @@ const Profile = () => {
                 type="tel"
                 value={editForm.phone_number}
                 onChange={(e) => setEditForm(prev => ({ ...prev, phone_number: e.target.value }))}
-                className="bg-white/50 border border-brand-gray/20 rounded-lg px-3 py-2 text-brand-navy focus:outline-none focus:ring-2 focus:ring-brand-orange/50 w-full"
+                className="bg-[var(--surface-elevated)] border border-[var(--border-color)] rounded-lg px-3 py-2 text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)]/50 w-full"
                 placeholder={t("profile.enterPhone")}
               />
             ) : (
-              <div className="text-brand-navy font-semibold text-lg">{user?.phone_number || '—'}</div>
+              <div className="text-[var(--text-primary)] font-semibold text-lg">{user?.phone_number || '—'}</div>
             )}
           </GlassCard>
 
-          <GlassCard className="flex flex-col gap-1 p-5 border border-white/40 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
-             <div className="flex items-center gap-2 text-brand-gray/60 mb-2 text-sm font-medium uppercase tracking-wider">
+          <GlassCard className="flex flex-col gap-1 p-5 border border-[var(--border-color)] shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+             <div className="flex items-center gap-2 text-[var(--text-muted)] mb-2 text-sm font-medium uppercase tracking-wider">
                <span>{t("profile.language")}</span>
              </div>
-             <div className="text-brand-navy font-semibold text-lg">{currentLanguage}</div>
+             <div className="text-[var(--text-primary)] font-semibold text-lg">{currentLanguage}</div>
           </GlassCard>
 
-          <GlassCard className="flex flex-col gap-1 p-5 border border-white/40 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
-             <div className="flex items-center gap-2 text-brand-gray/60 mb-2 text-sm font-medium uppercase tracking-wider">
+          <GlassCard className="flex flex-col gap-1 p-5 border border-[var(--border-color)] shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+             <div className="flex items-center gap-2 text-[var(--text-muted)] mb-2 text-sm font-medium uppercase tracking-wider">
                <span>{t("profile.memberSince")}</span>
              </div>
-             <div className="text-brand-navy font-semibold text-lg">{memberSince}</div>
+             <div className="text-[var(--text-primary)] font-semibold text-lg">{memberSince}</div>
           </GlassCard>
 
-          <GlassCard className="flex flex-col gap-1 p-5 border border-white/40 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
-             <div className="flex items-center gap-2 text-brand-gray/60 mb-2 text-sm font-medium uppercase tracking-wider">
+          <GlassCard className="flex flex-col gap-1 p-5 border border-[var(--border-color)] shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+             <div className="flex items-center gap-2 text-[var(--text-muted)] mb-2 text-sm font-medium uppercase tracking-wider">
                <span>{t("profile.notifications")}</span>
              </div>
-             <div className="text-brand-navy font-semibold text-lg">{t("profile.on")}</div>
+             <div className="text-[var(--text-primary)] font-semibold text-lg">{t("profile.on")}</div>
           </GlassCard>
 
-          <GlassCard className="flex flex-col gap-1 p-5 border border-white/40 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
-             <div className="flex items-center gap-2 text-brand-gray/60 mb-2 text-sm font-medium uppercase tracking-wider">
+          <GlassCard className="flex flex-col gap-1 p-5 border border-[var(--border-color)] shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+             <div className="flex items-center gap-2 text-[var(--text-muted)] mb-2 text-sm font-medium uppercase tracking-wider">
                <span>{t("profile.privacy")}</span>
              </div>
-             <div className="text-brand-navy font-semibold text-lg">{t("profile.private")}</div>
+             <div className="text-[var(--text-primary)] font-semibold text-lg">{t("profile.private")}</div>
           </GlassCard>
         </div>
       </div>

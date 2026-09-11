@@ -4,12 +4,26 @@ import GlassCard from '../components/ui/GlassCard';
 import { useAuth } from '../context/AuthContext';
 import { useTranslation } from 'react-i18next';
 import api from '../api/axios';
-import { 
+import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer,
   PieChart, Pie, Cell,
   BarChart, Bar
 } from 'recharts';
 import { TrendingUp, ShieldCheck, AlertCircle, XCircle, Bookmark, Download, ScanSearch } from 'lucide-react';
+import { motion } from 'framer-motion';
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: { staggerChildren: 0.1 }
+  }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
+};
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -30,7 +44,7 @@ const Dashboard = () => {
         setLoading(false);
       }
     };
-    
+
     const fetchTrending = async () => {
       try {
         const response = await api.get('/history/trending');
@@ -57,39 +71,44 @@ const Dashboard = () => {
   if (loading) {
     return (
       <DashboardLayout title={t('dashboard.title')}>
-        <div className="flex items-center justify-center h-full">Loading...</div>
+        <div className="flex items-center justify-center h-full text-[var(--text-secondary)]">Loading...</div>
       </DashboardLayout>
     );
   }
 
   return (
     <DashboardLayout title={t('dashboard.title')}>
-      <div className="flex flex-col gap-6 pb-10 max-w-7xl mx-auto">
-        
+      <motion.div
+        className="flex flex-col gap-6 pb-10 max-w-7xl mx-auto"
+        variants={containerVariants}
+        initial="hidden"
+        animate="show"
+      >
+
         {/* Header Section */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-2">
           <div>
-            <h1 className="text-sm font-semibold text-brand-gray/60 tracking-widest uppercase mb-2">{t("dashboard.welcome")}</h1>
+            <h1 className="text-sm font-semibold text-[var(--text-secondary)] tracking-widest uppercase mb-2">{t("dashboard.welcome")}</h1>
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-brand-orange flex items-center justify-center shadow-lg shadow-brand-orange/30">
+              <div className="w-12 h-12 rounded-xl bg-[var(--accent)] flex items-center justify-center shadow-lg shadow-[var(--accent-glow)]">
                 <ScanSearch size={26} className="text-white" />
               </div>
               <div className="flex flex-col justify-center">
-                <h2 className="text-4xl font-black text-brand-navy tracking-tight leading-none mb-2.5 mt-1">
+                <h2 className="text-4xl font-black text-[var(--text-primary)] tracking-tight leading-none mb-2.5 mt-1">
                   {user?.name}
                 </h2>
-                <div className="text-lg font-medium text-brand-navy/80 flex items-center gap-1.5 leading-none">
-                  <span className="text-brand-gray/60 font-normal italic">{t("dashboard.to")}</span> FakeCheckPro
+                <div className="text-lg font-medium text-[var(--text-primary)] opacity-80 flex items-center gap-1.5 leading-none">
+                  <span className="text-[var(--text-secondary)] font-normal italic">{t("dashboard.to")}</span> FakeCheckPro
                 </div>
               </div>
             </div>
-            <p className="text-brand-gray mt-4 text-lg">
+            <p className="text-[var(--text-secondary)] mt-4 text-lg">
               {t("dashboard.snapshot")}
             </p>
           </div>
           <button 
             onClick={() => window.print()}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-brand-gray/20 bg-white/50 text-brand-navy hover:bg-white transition-all shadow-sm print:hidden"
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-[var(--border-color)] bg-[var(--surface)] text-[var(--text-primary)] hover:bg-[var(--surface-elevated)] transition-all shadow-sm print:hidden"
           >
             <Download size={18} />
             <span className="font-medium">{t("dashboard.downloadPdf")}</span>
@@ -97,59 +116,59 @@ const Dashboard = () => {
         </div>
 
         {/* Stat Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-          <GlassCard className="flex flex-col p-5 border border-white/40 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
-            <div className="text-brand-navy mb-2"><TrendingUp size={24} /></div>
-            <div className="text-3xl font-black text-brand-navy mb-1">{stats?.total_checks || 0}</div>
-            <div className="text-xs font-semibold text-brand-gray/60 uppercase tracking-widest">{t("dashboard.totalChecks")}</div>
+        <motion.div variants={itemVariants} className="grid grid-cols-2 md:grid-cols-5 gap-4">
+          <GlassCard className="flex flex-col p-5 group hover:shadow-lg transition-all duration-300" motionProps={{ variants: itemVariants }}>
+            <div className="text-[var(--accent)] mb-2 group-hover:scale-110 transition-transform"><TrendingUp size={24} /></div>
+            <div className="text-3xl font-black text-[var(--text-primary)] mb-1">{stats?.total_checks || 0}</div>
+            <div className="text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-widest">{t("dashboard.totalChecks")}</div>
           </GlassCard>
 
-          <GlassCard className="flex flex-col p-5 border border-emerald-500/20 bg-emerald-50/50 shadow-[0_8px_30px_rgb(16,185,129,0.1)]">
-            <div className="text-emerald-500 mb-2"><ShieldCheck size={24} /></div>
-            <div className="text-3xl font-black text-emerald-600 mb-1">{stats?.real || 0}</div>
-            <div className="text-xs font-semibold text-emerald-600/60 uppercase tracking-widest">{t("dashboard.real")}</div>
+          <GlassCard className="flex flex-col p-5 border border-[var(--success)]/20 bg-[var(--success-soft)] group hover:shadow-lg transition-all duration-300" motionProps={{ variants: itemVariants }}>
+            <div className="text-[var(--success)] mb-2 group-hover:scale-110 transition-transform"><ShieldCheck size={24} /></div>
+            <div className="text-3xl font-black text-[var(--success)] mb-1">{stats?.real || 0}</div>
+            <div className="text-xs font-semibold text-[var(--success)] opacity-80 uppercase tracking-widest">{t("dashboard.real")}</div>
           </GlassCard>
 
-          <GlassCard className="flex flex-col p-5 border border-amber-500/20 bg-amber-50/50 shadow-[0_8px_30px_rgb(245,158,11,0.1)]">
-            <div className="text-amber-500 mb-2"><AlertCircle size={24} /></div>
-            <div className="text-3xl font-black text-amber-600 mb-1">{stats?.partial || 0}</div>
-            <div className="text-xs font-semibold text-amber-600/60 uppercase tracking-widest">{t("dashboard.partiallyTrue")}</div>
+          <GlassCard className="flex flex-col p-5 border border-[var(--warning)]/20 bg-[var(--warning-soft)] group hover:shadow-lg transition-all duration-300" motionProps={{ variants: itemVariants }}>
+            <div className="text-[var(--warning)] mb-2 group-hover:scale-110 transition-transform"><AlertCircle size={24} /></div>
+            <div className="text-3xl font-black text-[var(--warning)] mb-1">{stats?.partial || 0}</div>
+            <div className="text-xs font-semibold text-[var(--warning)] opacity-80 uppercase tracking-widest">{t("dashboard.partiallyTrue")}</div>
           </GlassCard>
 
-          <GlassCard className="flex flex-col p-5 border border-red-500/20 bg-red-50/50 shadow-[0_8px_30px_rgb(239,68,68,0.1)]">
-            <div className="text-red-500 mb-2"><XCircle size={24} /></div>
-            <div className="text-3xl font-black text-red-600 mb-1">{stats?.fake || 0}</div>
-            <div className="text-xs font-semibold text-red-600/60 uppercase tracking-widest">{t("dashboard.fake")}</div>
+          <GlassCard className="flex flex-col p-5 border border-[var(--danger)]/20 bg-[var(--danger-soft)] group hover:shadow-lg transition-all duration-300" motionProps={{ variants: itemVariants }}>
+            <div className="text-[var(--danger)] mb-2 group-hover:scale-110 transition-transform"><XCircle size={24} /></div>
+            <div className="text-3xl font-black text-[var(--danger)] mb-1">{stats?.fake || 0}</div>
+            <div className="text-xs font-semibold text-[var(--danger)] opacity-80 uppercase tracking-widest">{t("dashboard.fake")}</div>
           </GlassCard>
 
-          <GlassCard className="flex flex-col p-5 border border-white/40 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
-            <div className="text-brand-gray mb-2"><Bookmark size={24} /></div>
-            <div className="text-3xl font-black text-brand-navy mb-1">{stats?.saved_reports || 0}</div>
-            <div className="text-xs font-semibold text-brand-gray/60 uppercase tracking-widest">{t("dashboard.savedReports")}</div>
+          <GlassCard className="flex flex-col p-5 group hover:shadow-lg transition-all duration-300" motionProps={{ variants: itemVariants }}>
+            <div className="text-[var(--text-secondary)] mb-2 group-hover:scale-110 transition-transform"><Bookmark size={24} /></div>
+            <div className="text-3xl font-black text-[var(--text-primary)] mb-1">{stats?.saved_reports || 0}</div>
+            <div className="text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-widest">{t("dashboard.savedReports")}</div>
           </GlassCard>
-        </div>
+        </motion.div>
 
         {/* Charts Row 1 */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <GlassCard className="md:col-span-2 p-6 flex flex-col border border-white/40 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
-            <h3 className="text-xs font-semibold text-brand-gray/60 uppercase tracking-widest mb-6">{t("dashboard.activity")}</h3>
+        <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <GlassCard className="md:col-span-2 p-6 flex flex-col">
+            <h3 className="text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-widest mb-6">{t("dashboard.activity")}</h3>
             <div className="flex-1 min-h-[250px]">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={stats?.activity || []} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
-                  <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#94a3b8' }} tickFormatter={(val) => val.substring(5)} />
-                  <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#94a3b8' }} />
-                  <RechartsTooltip 
-                    contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 20px rgba(0,0,0,0.08)' }}
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border-color)" />
+                  <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: 'var(--text-secondary)' }} tickFormatter={(val) => val.substring(5)} />
+                  <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: 'var(--text-secondary)' }} />
+                  <RechartsTooltip
+                    contentStyle={{ borderRadius: '12px', border: 'none', backgroundColor: 'var(--surface-elevated)', color: 'var(--text-primary)', boxShadow: '0 4px 20px rgba(0,0,0,0.2)' }}
                   />
-                  <Line type="monotone" dataKey="count" stroke="#0f172a" strokeWidth={2} dot={false} activeDot={{ r: 6, fill: '#0f172a', stroke: '#fff', strokeWidth: 2 }} />
+                  <Line type="monotone" dataKey="count" stroke="var(--accent)" strokeWidth={2} dot={false} activeDot={{ r: 6, fill: 'var(--accent)', stroke: 'var(--surface)', strokeWidth: 2 }} />
                 </LineChart>
               </ResponsiveContainer>
             </div>
           </GlassCard>
 
-          <GlassCard className="p-6 flex flex-col border border-white/40 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
-            <h3 className="text-xs font-semibold text-brand-gray/60 uppercase tracking-widest mb-2">{t("dashboard.realVsFake")}</h3>
+          <GlassCard className="p-6 flex flex-col">
+            <h3 className="text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-widest mb-2">{t("dashboard.realVsFake")}</h3>
             <div className="flex-1 min-h-[200px] flex items-center justify-center relative">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
@@ -166,85 +185,85 @@ const Dashboard = () => {
                     {pieData.length > 0 ? pieData.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
                     )) : (
-                      <Cell fill="#e2e8f0" />
+                      <Cell fill="var(--border-color)" />
                     )}
                   </Pie>
-                  <RechartsTooltip />
+                  <RechartsTooltip contentStyle={{ backgroundColor: 'var(--surface-elevated)', border: 'none', borderRadius: '8px' }} itemStyle={{ color: 'var(--text-primary)' }}/>
                 </PieChart>
               </ResponsiveContainer>
             </div>
             <div className="text-center mt-2">
-              <span className="text-brand-gray text-sm">{t("dashboard.avgCredibility")} </span>
-              <span className="font-bold text-brand-navy">{stats?.avg_credibility || 0} / 100</span>
+              <span className="text-[var(--text-secondary)] text-sm">{t("dashboard.avgCredibility")} </span>
+              <span className="font-bold text-[var(--text-primary)]">{stats?.avg_credibility || 0} / 100</span>
             </div>
           </GlassCard>
-        </div>
+        </motion.div>
 
         {/* Charts Row 2 */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <GlassCard className="md:col-span-2 p-6 flex flex-col border border-white/40 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
-            <h3 className="text-xs font-semibold text-brand-gray/60 uppercase tracking-widest mb-6">{t("dashboard.distribution")}</h3>
+        <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <GlassCard className="md:col-span-2 p-6 flex flex-col">
+            <h3 className="text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-widest mb-6">{t("dashboard.distribution")}</h3>
             <div className="flex-1 min-h-[200px]">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={stats?.distribution || []} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
-                    <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 12}} dy={10} />
-                    <YAxis axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 12}} />
-                    <RechartsTooltip cursor={{fill: '#f8fafc'}} contentStyle={{borderRadius: '12px', border: 'none', boxShadow: '0 10px 25px rgba(0,0,0,0.05)'}} />
-                    <Bar dataKey="count" radius={[4, 4, 0, 0]}>
-                      {
-                        (stats?.distribution || []).map((entry, index) => {
-                           const colors = ['#ef4444', '#f97316', '#eab308', '#84cc16', '#10b981']; // Red (Fake) to Green (Real)
-                           return <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />;
-                        })
-                      }
-                    </Bar>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border-color)" />
+                  <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: 'var(--text-secondary)', fontSize: 12 }} dy={10} />
+                  <YAxis axisLine={false} tickLine={false} tick={{ fill: 'var(--text-secondary)', fontSize: 12 }} />
+                  <RechartsTooltip cursor={{ fill: 'var(--surface-elevated)' }} contentStyle={{ borderRadius: '12px', border: 'none', backgroundColor: 'var(--surface-elevated)', color: 'var(--text-primary)', boxShadow: '0 10px 25px rgba(0,0,0,0.2)' }} />
+                  <Bar dataKey="count" radius={[4, 4, 0, 0]}>
+                    {
+                      (stats?.distribution || []).map((entry, index) => {
+                        const colors = ['#ef4444', '#f97316', '#eab308', '#84cc16', '#10b981']; // Red (Fake) to Green (Real)
+                        return <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />;
+                      })
+                    }
+                  </Bar>
                 </BarChart>
               </ResponsiveContainer>
             </div>
           </GlassCard>
 
-          <GlassCard className="p-6 flex flex-col border border-white/40 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
-            <h3 className="text-xs font-semibold text-brand-gray/60 uppercase tracking-widest mb-6">{t("dashboard.languages")}</h3>
+          <GlassCard className="p-6 flex flex-col">
+            <h3 className="text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-widest mb-6">{t("dashboard.languages")}</h3>
             <div className="flex flex-col gap-4 flex-1">
               {stats?.languages?.length > 0 ? (
                 stats.languages.map((lang, idx) => (
                   <div key={idx} className="flex items-center justify-between">
-                    <span className="font-semibold text-brand-navy">{lang.name}</span>
-                    <span className="font-black text-brand-navy text-lg">{lang.count}</span>
+                    <span className="font-semibold text-[var(--text-primary)]">{lang.name}</span>
+                    <span className="font-black text-[var(--text-primary)] text-lg">{lang.count}</span>
                   </div>
                 ))
               ) : (
-                <div className="text-brand-gray text-sm">{t("dashboard.noData")}</div>
+                <div className="text-[var(--text-secondary)] text-sm">{t("dashboard.noData")}</div>
               )}
             </div>
           </GlassCard>
-        </div>
+        </motion.div>
 
         {/* Trending Section Row 3 */}
-        <div className="flex flex-col gap-6 mt-2">
+        <motion.div variants={itemVariants} className="flex flex-col gap-6 mt-2">
           {isLoadingTrending ? (
             <>
-              <GlassCard className="p-6 flex flex-col border border-white/40 shadow-[0_8px_30px_rgb(0,0,0,0.04)] animate-pulse">
-                <div className="h-4 bg-brand-gray/20 rounded w-1/3 mb-4"></div>
+              <GlassCard className="p-6 flex flex-col animate-pulse">
+                <div className="h-4 bg-[var(--surface-elevated)] rounded w-1/3 mb-4"></div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {[1, 2, 3, 4, 5, 6].map(i => (
-                    <div key={i} className="p-4 rounded-xl border border-brand-gray/20 bg-white/30 h-24 flex flex-col gap-2">
+                    <div key={i} className="p-4 rounded-xl border border-[var(--border-color)] bg-[var(--surface-elevated)] h-24 flex flex-col gap-2">
                       <div className="flex justify-between">
-                        <div className="h-4 bg-brand-gray/20 rounded w-1/2"></div>
-                        <div className="h-4 bg-brand-gray/20 rounded w-8"></div>
+                        <div className="h-4 bg-[var(--border-color)] rounded w-1/2"></div>
+                        <div className="h-4 bg-[var(--border-color)] rounded w-8"></div>
                       </div>
-                      <div className="h-3 bg-brand-gray/20 rounded w-full mt-2"></div>
-                      <div className="h-3 bg-brand-gray/20 rounded w-2/3"></div>
+                      <div className="h-3 bg-[var(--border-color)] rounded w-full mt-2"></div>
+                      <div className="h-3 bg-[var(--border-color)] rounded w-2/3"></div>
                     </div>
                   ))}
                 </div>
               </GlassCard>
-              <GlassCard className="p-6 flex flex-col border border-white/40 shadow-[0_8px_30px_rgb(0,0,0,0.04)] animate-pulse">
-                <div className="h-4 bg-brand-gray/20 rounded w-1/4 mb-4"></div>
+              <GlassCard className="p-6 flex flex-col animate-pulse">
+                <div className="h-4 bg-[var(--surface-elevated)] rounded w-1/4 mb-4"></div>
                 <div className="flex flex-wrap gap-3">
                   {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
-                    <div key={i} className="h-8 w-24 bg-brand-gray/20 rounded-full"></div>
+                    <div key={i} className="h-8 w-24 bg-[var(--surface-elevated)] rounded-full border border-[var(--border-color)]"></div>
                   ))}
                 </div>
               </GlassCard>
@@ -253,18 +272,18 @@ const Dashboard = () => {
             (trendingData?.trending_topics?.length > 0 || trendingData?.trending_keywords?.length > 0) && (
               <>
                 {trendingData?.trending_topics?.length > 0 && (
-                  <GlassCard className="p-6 flex flex-col border border-white/40 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
-                    <h3 className="text-xs font-semibold text-brand-gray/60 uppercase tracking-widest mb-4 flex items-center gap-2">
-                      {t("dashboard.globalTrending")} <span className="text-brand-gray/30">•</span> {t("dashboard.last30d")} <span className="text-brand-gray/30">•</span> <span className="text-[#ef4444]">{t("dashboard.flagged")}</span>
+                  <GlassCard className="p-6 flex flex-col">
+                    <h3 className="text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-widest mb-4 flex items-center gap-2">
+                      {t("dashboard.globalTrending")} <span className="opacity-50">•</span> {t("dashboard.last30d")} <span className="opacity-50">•</span> <span className="text-[var(--danger)]">{t("dashboard.flagged")}</span>
                     </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                       {trendingData.trending_topics.map((topic, idx) => (
-                        <div key={idx} className="p-4 rounded-xl border border-brand-gray/20 bg-white/50 flex flex-col gap-2">
+                        <div key={idx} className="p-4 rounded-xl border border-[var(--border-color)] bg-[var(--surface-elevated)] flex flex-col gap-2">
                           <div className="flex justify-between items-start">
-                            <span className="font-semibold text-brand-navy text-sm">{topic.title || topic}</span>
-                            <span className="text-brand-red text-xs font-medium mt-0.5">x{topic.count || 1}</span>
+                            <span className="font-semibold text-[var(--text-primary)] text-sm">{topic.title || topic}</span>
+                            <span className="text-[var(--danger)] text-xs font-medium mt-0.5">x{topic.count || 1}</span>
                           </div>
-                          <p className="text-xs text-brand-gray line-clamp-2">{topic.subtitle || ""}</p>
+                          <p className="text-xs text-[var(--text-secondary)] line-clamp-2">{topic.subtitle || ""}</p>
                         </div>
                       ))}
                     </div>
@@ -272,14 +291,14 @@ const Dashboard = () => {
                 )}
 
                 {trendingData?.trending_keywords?.length > 0 && (
-                  <GlassCard className="p-6 flex flex-col border border-white/40 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
-                    <h3 className="text-xs font-semibold text-[#10b981] uppercase tracking-widest mb-4">{t("dashboard.trendingKeywords")}</h3>
+                  <GlassCard className="p-6 flex flex-col">
+                    <h3 className="text-xs font-semibold text-[var(--success)] uppercase tracking-widest mb-4">{t("dashboard.trendingKeywords")}</h3>
                     <div className="flex flex-wrap gap-3">
                       {trendingData.trending_keywords.map((kw, idx) => (
-                        <div key={idx} className="flex items-center gap-2 px-4 py-2 rounded-full border border-brand-gray/20 bg-white/50 text-sm">
-                          <span className="font-medium text-brand-navy">{kw.keyword}</span>
-                          <span className="text-brand-gray/40">•</span>
-                          <span className="text-brand-gray">{kw.count}</span>
+                        <div key={idx} className="flex items-center gap-2 px-4 py-2 rounded-full border border-[var(--border-color)] bg-[var(--surface-elevated)] text-sm">
+                          <span className="font-medium text-[var(--text-primary)]">{kw.keyword}</span>
+                          <span className="text-[var(--text-secondary)] opacity-50">•</span>
+                          <span className="text-[var(--text-secondary)]">{kw.count}</span>
                         </div>
                       ))}
                     </div>
@@ -288,9 +307,9 @@ const Dashboard = () => {
               </>
             )
           )}
-        </div>
+        </motion.div>
 
-      </div>
+      </motion.div>
     </DashboardLayout>
   );
 };

@@ -18,7 +18,7 @@ const ModelInfoCard = () => {
         
         {/* Layer 1: ML Classification */}
         <div className="flex flex-col gap-4">
-          <div className="flex items-center gap-2 border-b border-white/10 pb-2">
+          <div className="flex items-center gap-2 border-b border-white dark:border-white/60/10 pb-2">
             <span className="bg-brand-orange/20 text-brand-orange text-xs font-bold px-2 py-1 rounded">{t('analyze.report.xai.layer1')}</span>
             <h3 className="text-sm font-semibold text-white/90">{t('analyze.report.xai.mlClassification')}</h3>
           </div>
@@ -51,7 +51,7 @@ const ModelInfoCard = () => {
 
         {/* Layer 2: Evidence Intelligence Engine */}
         <div className="flex flex-col gap-4">
-          <div className="flex items-center gap-2 border-b border-white/10 pb-2">
+          <div className="flex items-center gap-2 border-b border-white dark:border-white/60/10 pb-2">
             <span className="bg-blue-500/20 text-blue-400 text-xs font-bold px-2 py-1 rounded">{t('analyze.report.xai.layer2')}</span>
             <h3 className="text-sm font-semibold text-white/90">{t('analyze.report.xai.evidenceEngine')}</h3>
           </div>
@@ -61,7 +61,7 @@ const ModelInfoCard = () => {
               <div className="w-1.5 h-1.5 rounded-full bg-blue-400 shrink-0"></div>
               <span className="font-semibold text-white/90">{t('analyze.report.xai.claimExtraction')}</span>
             </div>
-            <div className="ml-0.5 border-l border-dashed border-white/20 pl-4 py-1 flex flex-col gap-3">
+            <div className="ml-0.5 border-l border-dashed border-white dark:border-white/60/20 pl-4 py-1 flex flex-col gap-3">
               <div className="flex items-center gap-2">
                 <Search size={12} className="text-white/40" />
                 <span>{t('analyze.report.xai.evidenceSearch')}</span>
@@ -96,12 +96,12 @@ const ModelInfoCard = () => {
 
         {/* Layer 3: FINAL {t('analyze.report.xai.decisionEngine')} */}
         <div className="flex flex-col gap-4">
-          <div className="flex items-center gap-2 border-b border-white/10 pb-2">
+          <div className="flex items-center gap-2 border-b border-white dark:border-white/60/10 pb-2">
             <span className="bg-green-500/20 text-green-400 text-xs font-bold px-2 py-1 rounded">{t('analyze.report.xai.layer3')}</span>
             <h3 className="text-sm font-semibold text-white/90">{t('analyze.report.xai.finalDecisionEngine')}</h3>
           </div>
           
-          <div className="bg-white/5 rounded-xl p-4 border border-white/10 shadow-inner flex flex-col gap-5 relative">
+          <div className="bg-white/5 rounded-xl p-4 border border-white dark:border-white/60/10 shadow-inner flex flex-col gap-5 relative">
             <div className="absolute inset-0 bg-gradient-to-b from-green-500/5 to-transparent rounded-xl pointer-events-none"></div>
             
             <div className="flex flex-col items-center z-10">
@@ -124,21 +124,21 @@ const ModelInfoCard = () => {
             
             <div className="flex justify-between z-10 w-full mt-2">
               <div className="flex flex-col items-center gap-2 w-1/3">
-                <div className="w-7 h-7 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center">
+                <div className="w-7 h-7 rounded-lg bg-white/5 border border-white dark:border-white/60/10 flex items-center justify-center">
                   <Activity size={12} className="text-brand-orange" />
                 </div>
                 <span className="text-[9px] text-center text-white/60 font-medium leading-tight uppercase tracking-wider">{t('analyze.report.xai.normalizeScores')}</span>
               </div>
               
               <div className="flex flex-col items-center gap-2 w-1/3">
-                <div className="w-7 h-7 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center">
+                <div className="w-7 h-7 rounded-lg bg-white/5 border border-white dark:border-white/60/10 flex items-center justify-center">
                   <AlertTriangle size={12} className="text-red-400" />
                 </div>
                 <span className="text-[9px] text-center text-white/60 font-medium leading-tight uppercase tracking-wider">{t('analyze.report.xai.conflictDetection')}</span>
               </div>
               
               <div className="flex flex-col items-center gap-2 w-1/3">
-                <div className="w-7 h-7 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center">
+                <div className="w-7 h-7 rounded-lg bg-white/5 border border-white dark:border-white/60/10 flex items-center justify-center">
                   <SlidersHorizontal size={12} className="text-blue-400" />
                 </div>
                 <span className="text-[9px] text-center text-white/60 font-medium leading-tight uppercase tracking-wider">{t('analyze.report.xai.overridesRules')}</span>

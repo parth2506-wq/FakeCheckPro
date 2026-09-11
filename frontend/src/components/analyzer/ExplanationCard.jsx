@@ -19,11 +19,11 @@ const ExplanationCard = ({ reason }) => {
 
   return (
     <GlassCard className="flex flex-col gap-3">
-      <div className="flex items-center gap-2 text-brand-navy">
-        <BrainCircuit size={18} className="text-brand-orange" />
+      <div className="flex items-center gap-2 text-[var(--text-primary)]">
+        <BrainCircuit size={18} className="text-[var(--accent)]" />
         <h3 className="font-semibold text-lg">{t('analyze.report.xai.whyPrediction')}</h3>
       </div>
-      <p className="text-brand-navy/80 leading-relaxed text-[15px]">
+      <p className="text-[var(--text-secondary)] leading-relaxed text-[15px]">
         {displayReason}
       </p>
     </GlassCard>

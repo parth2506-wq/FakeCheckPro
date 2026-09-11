@@ -63,7 +63,7 @@ const Register = () => {
     <AuthLayout title="Create Account" subtitle="Create your account to start verifying news and tracking your analysis history.">
       <form onSubmit={handleSubmit} className="space-y-3">
         {apiError && (
-          <div className="p-3 bg-red-50 text-red-600 text-sm rounded-lg border border-red-100">
+          <div className="p-3 bg-[var(--danger-soft)] text-[var(--danger)] text-sm rounded-lg border border-[var(--danger)]/20">
             {apiError}
           </div>
         )}
@@ -105,9 +105,9 @@ const Register = () => {
         />
         
         <div className="mb-4 w-full">
-          <label className="block text-sm font-medium text-brand-navy mb-1.5">Language Preference</label>
+          <label className="block text-sm font-medium text-[var(--text-primary)] mb-1.5">Language Preference</label>
           <select 
-            className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-white/50 focus:bg-white focus:border-brand-orange focus:ring-2 focus:ring-brand-orange/20 transition-all outline-none appearance-none"
+            className="w-full px-4 py-2.5 rounded-xl border border-[var(--border-color)] bg-[var(--surface)] text-[var(--text-primary)] focus:bg-[var(--surface-elevated)] focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/20 transition-all outline-none appearance-none"
             value={formData.language}
             onChange={(e) => setFormData({ ...formData, language: e.target.value })}
           >
@@ -120,9 +120,9 @@ const Register = () => {
         </Button>
       </form>
       
-      <p className="mt-8 text-center text-sm text-brand-gray">
+      <p className="mt-8 text-center text-sm text-[var(--text-secondary)]">
         Already have an account?{' '}
-        <Link to="/login" className="text-brand-orange font-medium hover:underline">
+        <Link to="/login" className="text-[var(--accent)] font-medium hover:underline">
           Sign in
         </Link>
       </p>

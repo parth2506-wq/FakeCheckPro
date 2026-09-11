@@ -48,7 +48,7 @@ const ManualAnalyzer = ({ onResult, onError }) => {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder={t('analyze.inputs.headlinePlaceholder')}
-            className="w-full px-4 py-3 bg-white/50 border border-white focus:border-brand-orange focus:ring-2 focus:ring-brand-orange/20 rounded-xl outline-none transition-all placeholder:text-brand-gray/40 text-brand-navy shadow-sm"
+            className="w-full px-4 py-3 bg-white/50 dark:bg-white/90 border border-white dark:border-white/60 focus:border-brand-orange focus:ring-2 focus:ring-brand-orange/20 rounded-xl outline-none transition-all placeholder:text-brand-gray/40 text-brand-navy shadow-sm"
             disabled={loading}
           />
         </div>
@@ -62,7 +62,7 @@ const ManualAnalyzer = ({ onResult, onError }) => {
             value={text}
             onChange={(e) => setText(e.target.value)}
             placeholder={t('analyze.inputs.articlePlaceholder')}
-            className="w-full h-48 px-4 py-3 bg-white/50 border border-white focus:border-brand-orange focus:ring-2 focus:ring-brand-orange/20 rounded-xl outline-none transition-all resize-none placeholder:text-brand-gray/40 text-brand-navy shadow-sm"
+            className="w-full h-48 px-4 py-3 bg-white/50 dark:bg-white/90 border border-white dark:border-white/60 focus:border-brand-orange focus:ring-2 focus:ring-brand-orange/20 rounded-xl outline-none transition-all resize-none placeholder:text-brand-gray/40 text-brand-navy shadow-sm"
             disabled={loading}
           />
         </div>

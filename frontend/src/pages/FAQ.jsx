@@ -6,14 +6,14 @@ import { HelpCircle, ChevronDown, ChevronUp } from 'lucide-react';
 
 const FAQItem = ({ question, answer, isOpen, onClick }) => {
   return (
-    <div className="border border-brand-gray/10 rounded-2xl overflow-hidden transition-all duration-300 shadow-sm">
+    <div className="border border-[var(--border-color)] rounded-2xl overflow-hidden transition-all duration-300 shadow-sm">
       <button
         onClick={onClick}
-        className={`w-full flex items-center justify-between p-5 text-left transition-colors ${isOpen ? 'bg-white text-brand-orange font-semibold shadow-sm' : 'bg-white/40 hover:bg-white/70 text-brand-navy font-medium'
+        className={`w-full flex items-center justify-between p-5 text-left transition-colors ${isOpen ? 'bg-[var(--surface-elevated)] text-[var(--accent)] font-semibold shadow-sm border-b border-[var(--border-color)]' : 'bg-[var(--surface)] hover:bg-[var(--surface-elevated)] text-[var(--text-primary)] font-medium'
           }`}
       >
         <span className="pr-4">{question}</span>
-        <div className={`p-1 rounded-full shrink-0 transition-colors ${isOpen ? 'bg-brand-orange/10 text-brand-orange' : 'bg-brand-gray/10 text-brand-gray'}`}>
+        <div className={`p-1 rounded-full shrink-0 transition-colors ${isOpen ? 'bg-[var(--accent-soft)] text-[var(--accent)]' : 'bg-[var(--text-primary)]/10 text-[var(--text-secondary)]'}`}>
           {isOpen ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
         </div>
       </button>
@@ -21,7 +21,7 @@ const FAQItem = ({ question, answer, isOpen, onClick }) => {
         className={`overflow-hidden transition-all duration-300 ease-in-out ${isOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
           }`}
       >
-        <div className="p-5 bg-white/60 text-brand-navy/80 leading-relaxed border-t border-brand-gray/10 text-sm sm:text-base">
+        <div className="p-5 bg-[var(--surface)] text-[var(--text-secondary)] leading-relaxed border-t border-[var(--border-color)] text-sm sm:text-base">
           {answer}
         </div>
       </div>
@@ -82,17 +82,17 @@ const FAQ = () => {
 
         {/* Header Section */}
         <div className="flex flex-col items-center text-center gap-4 mb-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
-          <div className="w-16 h-16 bg-brand-orange/10 rounded-2xl flex items-center justify-center mb-2 shadow-inner border border-brand-orange/20">
-            <HelpCircle size={32} className="text-brand-orange" />
+          <div className="w-16 h-16 bg-[var(--accent-soft)] rounded-2xl flex items-center justify-center mb-2 shadow-inner border border-[var(--accent)]/20">
+            <HelpCircle size={32} className="text-[var(--accent)]" />
           </div>
-          <h1 className="text-3xl font-bold text-brand-navy tracking-tight">{t("faq.gotQuestions")}</h1>
-          <p className="text-brand-gray max-w-2xl px-4">
+          <h1 className="text-3xl font-bold text-[var(--text-primary)] tracking-tight">{t("faq.gotQuestions")}</h1>
+          <p className="text-[var(--text-secondary)] max-w-2xl px-4">
             {t("faq.desc")}
           </p>
         </div>
 
         {/* FAQ List */}
-        <GlassCard className="p-4 sm:p-8 flex flex-col gap-4 bg-white/40 border-brand-gray/20 animate-in fade-in slide-in-from-bottom-8 duration-700">
+        <GlassCard className="p-4 sm:p-8 flex flex-col gap-4 bg-[var(--surface-elevated)] border-[var(--border-color)] animate-in fade-in slide-in-from-bottom-8 duration-700">
           {faqs.map((faq, index) => (
             <FAQItem
               key={index}

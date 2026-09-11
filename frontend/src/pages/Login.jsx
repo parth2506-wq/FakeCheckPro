@@ -44,7 +44,7 @@ const Login = () => {
     <AuthLayout title="Welcome Back" subtitle="Verify information with confidence.">
       <form onSubmit={handleSubmit} className="space-y-4">
         {apiError && (
-          <div className="p-3 bg-red-50 text-red-600 text-sm rounded-lg border border-red-100">
+          <div className="p-3 bg-[var(--danger-soft)] text-[var(--danger)] text-sm rounded-lg border border-[var(--danger)]/20">
             {apiError}
           </div>
         )}
@@ -68,7 +68,7 @@ const Login = () => {
             error={errors.password}
           />
           <div className="absolute top-0 right-0">
-            <Link to="/forgot-password" className="text-sm text-brand-orange hover:underline">
+            <Link to="/forgot-password" className="text-sm text-[var(--accent)] hover:underline">
               Forgot password?
             </Link>
           </div>
@@ -78,9 +78,9 @@ const Login = () => {
           <input 
             type="checkbox" 
             id="remember" 
-            className="rounded border-gray-300 text-brand-orange focus:ring-brand-orange" 
+            className="rounded border-[var(--border-color)] text-[var(--accent)] focus:ring-[var(--accent)] bg-[var(--surface-elevated)]" 
           />
-          <label htmlFor="remember" className="text-sm text-brand-gray cursor-pointer">
+          <label htmlFor="remember" className="text-sm text-[var(--text-secondary)] cursor-pointer">
             Remember me
           </label>
         </div>
@@ -90,9 +90,9 @@ const Login = () => {
         </Button>
       </form>
       
-      <p className="mt-8 text-center text-sm text-brand-gray">
+      <p className="mt-8 text-center text-sm text-[var(--text-secondary)]">
         Don't have an account?{' '}
-        <Link to="/register" className="text-brand-orange font-medium hover:underline">
+        <Link to="/register" className="text-[var(--accent)] font-medium hover:underline">
           Create an account
         </Link>
       </p>

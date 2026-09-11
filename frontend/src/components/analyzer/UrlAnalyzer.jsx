@@ -41,7 +41,7 @@ const UrlAnalyzer = ({ onResult, onError }) => {
             value={url}
             onChange={(e) => setUrl(e.target.value)}
             placeholder="https://example.com/news/article"
-            className="w-full px-4 py-3 bg-white/50 border border-white focus:border-brand-orange focus:ring-2 focus:ring-brand-orange/20 rounded-xl outline-none transition-all placeholder:text-brand-gray/40 text-brand-navy shadow-sm"
+            className="w-full px-4 py-3 bg-white/50 dark:bg-white/90 border border-white dark:border-white/60 focus:border-brand-orange focus:ring-2 focus:ring-brand-orange/20 rounded-xl outline-none transition-all placeholder:text-brand-gray/40 text-brand-navy shadow-sm"
             disabled={loading}
           />
         </div>

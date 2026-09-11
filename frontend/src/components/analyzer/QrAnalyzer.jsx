@@ -91,7 +91,7 @@ const QrAnalyzer = ({ onResult, onError }) => {
         {!isScanning && !url && (
           <div 
             onClick={startScanner}
-            className="w-full h-48 border-2 border-dashed border-brand-orange/30 rounded-xl flex flex-col items-center justify-center gap-3 bg-white/40 hover:bg-white/60 hover:border-brand-orange/50 transition-all cursor-pointer text-brand-navy shadow-sm"
+            className="w-full h-48 border-2 border-dashed border-brand-orange/30 rounded-xl flex flex-col items-center justify-center gap-3 bg-white/40 dark:bg-white/90 hover:bg-white/60 dark:bg-white/90 hover:border-brand-orange/50 transition-all cursor-pointer text-brand-navy shadow-sm"
           >
             <div className="w-12 h-12 rounded-full bg-brand-orange/10 flex items-center justify-center text-brand-orange">
               <QrCode size={24} />
@@ -105,7 +105,7 @@ const QrAnalyzer = ({ onResult, onError }) => {
 
         <div 
           id={qrcodeRegionId} 
-          className={`w-full overflow-hidden rounded-xl border border-white shadow-sm bg-black ${isScanning ? 'block' : 'hidden'}`}
+          className={`w-full overflow-hidden rounded-xl border border-white dark:border-white/60 shadow-sm bg-black ${isScanning ? 'block' : 'hidden'}`}
         ></div>
 
         {isScanning && (
@@ -129,7 +129,7 @@ const QrAnalyzer = ({ onResult, onError }) => {
                 type="url"
                 value={url}
                 onChange={(e) => setUrl(e.target.value)}
-                className="w-full px-4 py-3 bg-white/50 border border-white focus:border-brand-orange focus:ring-2 focus:ring-brand-orange/20 rounded-xl outline-none transition-all text-brand-navy shadow-sm pr-10"
+                className="w-full px-4 py-3 bg-white/50 dark:bg-white/90 border border-white dark:border-white/60 focus:border-brand-orange focus:ring-2 focus:ring-brand-orange/20 rounded-xl outline-none transition-all text-brand-navy shadow-sm pr-10"
                 disabled={isAnalyzing}
               />
               <button 

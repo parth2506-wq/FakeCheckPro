@@ -101,7 +101,7 @@ const VoiceAnalyzer = ({ onResult, onError }) => {
     <GlassCard className="flex flex-col animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div className="flex flex-col gap-6">
         
-        <div className="flex flex-col items-center justify-center p-6 bg-white/40 rounded-xl border border-white shadow-sm">
+        <div className="flex flex-col items-center justify-center p-6 bg-white/40 dark:bg-white/90 rounded-xl border border-white dark:border-white/60 shadow-sm">
           <button
             onClick={toggleRecording}
             className={`w-20 h-20 rounded-full flex items-center justify-center transition-all duration-300 shadow-md ${
@@ -132,7 +132,7 @@ const VoiceAnalyzer = ({ onResult, onError }) => {
             value={transcript}
             onChange={(e) => setTranscript(e.target.value)}
             placeholder="Your transcribed text will appear here..."
-            className="w-full h-40 px-4 py-3 bg-white/50 border border-white focus:border-brand-orange focus:ring-2 focus:ring-brand-orange/20 rounded-xl outline-none transition-all resize-none text-sm text-brand-navy shadow-sm leading-relaxed"
+            className="w-full h-40 px-4 py-3 bg-white/50 dark:bg-white/90 border border-white dark:border-white/60 focus:border-brand-orange focus:ring-2 focus:ring-brand-orange/20 rounded-xl outline-none transition-all resize-none text-sm text-brand-navy shadow-sm leading-relaxed"
             disabled={isAnalyzing}
           />
         </div>

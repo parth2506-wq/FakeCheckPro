@@ -1,0 +1,55 @@
+# High-Contrast Dark Mode Redesign (V2)
+
+Based on your feedback that the previous implementation was ugly, we will rebuild the dark mode entirely from scratch, strictly following your expert UI/UX and accessibility guidelines. We will abandon the colorful gradients and instead focus on a clean, professional, eye-strain-reduced aesthetic.
+
+## Proposed Color System & Elevation Layers
+
+We will implement a precise Tailwind CSS custom variable configuration mapping to these exact hex values:
+
+1.  **Base Layer (Backgrounds):** Deep Charcoal / Slate (`#0f172a` - Tailwind `slate-900`). This completely avoids pure black `#000000` to prevent motion blur and harsh contrast.
+2.  **Surface/Card Layer:** Raised Slate (`#1e293b` - Tailwind `slate-800`). Used for GlassCards and main content areas to create a clear visual hierarchy without relying on harsh borders.
+3.  **Raised/Hover Layer:** Lighter Slate (`#334155` - Tailwind `slate-700`). Used for dropdowns, active states, and hover effects.
+4.  **Borders & Dividers:** Subtle Slate (`#334155` - Tailwind `slate-700`).
+
+## Typography & Contrast (WCAG AA)
+
+We will avoid pure low-opacity white.
+1.  **Primary Text (Body & Headers):** Cool Off-White (`#f1f5f9` - Tailwind `slate-100`). Ensures a minimum 4.5:1 contrast ratio against the `#0f172a` base without the halation effect of pure `#ffffff`.
+2.  **Muted/Secondary Text:** Cool Gray (`#94a3b8` - Tailwind `slate-400`). Ensures readability for metadata and labels while clearly establishing a visual hierarchy.
+
+## Interactive Elements & Accents
+
+1.  **Brand Accents:** We will keep the primary brand Orange (`#E86C45`) as it inherently pops against deep slate backgrounds. 
+2.  **Interactive States:** We will implement clear focus rings and hover states using the Raised Layer (`#334155`) so interactions are tactile and obvious.
+
+## Proposed Changes (Files)
+
+We will implement a robust, persistent Theme toggle and update the UI:
+
+### Context & State
+#### [NEW] src/context/ThemeContext.jsx
+- A React context provider to handle persistent light/dark state via `localStorage` and `document.documentElement.classList`.
+
+#### [MODIFY] src/App.jsx
+- Wrap the router in the `<ThemeProvider>`
+
+### Styling & CSS
+#### [MODIFY] src/index.css
+- Implement the CSS Custom Properties and Tailwind `@custom-variant dark (&:where(.dark, .dark *));`.
+- Set the `body` background and text colors to swap between light and `#0f172a` modes.
+- Overhaul `.glass-card` to use the `#1e293b` surface layer in dark mode.
+
+### Components
+#### [MODIFY] src/components/layout/Header.jsx
+- Add a professional Sun/Moon toggle switch.
+- Update dropdowns and inputs to use the Raised surface colors.
+
+#### [MODIFY] src/components/layout/Sidebar.jsx
+- Update navigation links to use `text-slate-400` with `text-slate-100` on hover/active states.
+
+#### [MODIFY] src/pages/Dashboard.jsx & src/pages/Analyze.jsx
+- Methodically replace hardcoded `bg-white/50` and `text-brand-navy` with semantically correct dark mode Tailwind classes (`dark:bg-slate-800`, `dark:text-slate-100`).
+
+> [!IMPORTANT]
+> **User Review Required**
+> Do these specific charcoal/slate hex codes (`#0f172a` for base, `#1e293b` for surfaces) align with your vision for the redesign? Click **Proceed** to approve this plan and I will immediately build it.

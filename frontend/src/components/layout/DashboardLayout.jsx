@@ -5,14 +5,14 @@ import Chatbot from '../chatbot/Chatbot';
 
 const DashboardLayout = ({ children, title, evidenceData }) => {
   return (
-    <div className="flex h-screen print:h-auto w-full relative overflow-hidden print:overflow-visible bg-brand-beige">
+    <div className="flex h-screen print:h-auto w-full relative overflow-hidden print:overflow-visible transition-colors duration-500">
       {/* Dynamic Background */}
-      <div className="absolute inset-0 pointer-events-none z-0 print:hidden">
-        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-brand-peach/30 blur-[120px]" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-brand-orange/10 blur-[120px]" />
+      <div className="absolute inset-0 pointer-events-none z-0 print:hidden overflow-hidden">
+        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-[var(--accent)]/20 blur-[120px] transition-colors duration-500" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-blue-500/10 blur-[120px] transition-colors duration-500" />
       </div>
 
-      <div className="print:hidden">
+      <div className="print:hidden relative z-10">
         <Sidebar />
       </div>
       
