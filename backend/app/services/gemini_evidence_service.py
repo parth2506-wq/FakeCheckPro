@@ -1,6 +1,8 @@
 import os
 import json
+import re
 import logging
+import httpx
 from datetime import datetime
 from google import genai
 from google.genai import types
@@ -22,6 +24,39 @@ class GeminiEvidenceService:
         else:
             self.client = genai.Client(api_key=self.api_key)
 
+    async def _fetch_serper_results(self, query: str) -> str:
+        serper_api_key = os.getenv("SERPER_API_KEY")
+        if not serper_api_key:
+            return "Live Web Search Results: [Search unavailable - Missing SERPER_API_KEY]"
+        
+        url = "https://google.serper.dev/search"
+        payload = json.dumps({"q": query, "num": 5})
+        headers = {
+            'X-API-KEY': serper_api_key,
+            'Content-Type': 'application/json'
+        }
+        try:
+            async with httpx.AsyncClient(timeout=5.0) as client:
+                response = await client.post(url, headers=headers, content=payload)
+                if response.status_code == 200:
+                    data = response.json()
+                    organic = data.get("organic", [])
+                    if not organic:
+                        return "Live Web Search Results: [No results found]"
+                    results = "Live Web Search Results:\n"
+                    for item in organic:
+                        title = item.get("title", "")
+                        snippet = item.get("snippet", "")
+                        link = item.get("link", "")
+                        results += f"- Title: {title}\n  Snippet: {snippet}\n  URL: {link}\n\n"
+                    return results
+                else:
+                    logger.warning(f"Serper API error: {response.status_code} {response.text}")
+                    return "Live Web Search Results: [Search failed]"
+        except Exception as e:
+            logger.warning(f"Serper API exception: {str(e)}")
+            return "Live Web Search Results: [Search failed]"
+
     async def verify_evidence(
         self, 
         article_text: str, 
@@ -36,11 +71,12 @@ class GeminiEvidenceService:
         # Prepare the system instruction
         system_instruction = """
         You are a multilingual evidence-aware news verification analyst. Your job is not to blindly classify an article as true or false.
-        Your job is to extract verifiable factual claims, search the current web for reliable evidence using the Google Search tool, 
-        evaluate whether that evidence supports or contradicts each claim, assess source reliability, aggregate the evidence, 
-        and produce a transparent Evidence Score.
+        Your job is to extract verifiable factual claims (MAXIMUM 4 CORE CLAIMS), and evaluate their credibility based STRICTLY on the "Live Web Search Results" provided in the prompt. 
+        You DO NOT have access to an internal web search tool, so you must rely on the provided Live Web Search Results to evaluate whether real-world evidence supports or contradicts each claim. 
+        Produce a transparent Evidence Score.
+        CRITICAL FOR SPEED: Keep all text fields (summary, reasoning, limitations, reason) EXTREMELY brief (maximum 1 short sentence).
 
-        The Evidence Score measures the strength of available external evidence (0-100).
+        The Evidence Score measures the strength of the provided search evidence (0-100).
         It does NOT measure the probability that the article is true or false.
 
         You must separately determine:
@@ -149,10 +185,20 @@ class GeminiEvidenceService:
         {article_text}
         ---
         """
+        
+        # 1. Latency Optimized Pre-processing: Grab the first line (Title) as the heuristic query
+        search_query_base = translated_text if translated_text else article_text
+        search_query = search_query_base.split('\n')[0][:120].strip()
+        
+        # 2. Fetch Live Search Context manually
+        search_context = await self._fetch_serper_results(search_query)
+        
+        # 3. Inject Context
+        prompt += f"\n\n--- LIVE WEB SEARCH CONTEXT ---\n{search_context}\n-------------------------------\n"
 
         try:
             # We use the official GenAI SDK (google-genai).
-            # The gemini-3.6-flash model is requested.
+            # The gemini-3.1-flash-lite model is requested.
             # We will ask for JSON structured output matching the EvidenceResult schema.
             schema_instruction = """
 CRITICAL: You MUST return ONLY valid JSON. Your response must be parseable by json.loads(). Use this exact structure:
@@ -172,31 +218,40 @@ CRITICAL: You MUST return ONLY valid JSON. Your response must be parseable by js
 }
 Do NOT wrap the JSON in markdown blocks. Output only the JSON.
 """
-            response = self.client.models.generate_content(
-                model='gemini-2.5-flash',
+            response = await self.client.aio.models.generate_content(
+                model='gemini-3.1-flash-lite',
                 contents=prompt,
                 config=types.GenerateContentConfig(
                     system_instruction=system_instruction + "\n\n" + schema_instruction,
-                    tools=[{"google_search": {}}],
-                    temperature=0.2
+                    temperature=0.2,
+                    response_mime_type="application/json",
+                    response_schema=EvidenceResult
                 )
             )
 
+            # Safely extract text from all parts to bypass any property ValueErrors
+            result_json = ""
             try:
-                result_json = response.text.strip()
-            except ValueError:
-                result_json = ""
+                if response.candidates and response.candidates[0].content and response.candidates[0].content.parts:
+                    for part in response.candidates[0].content.parts:
+                        if hasattr(part, 'text') and part.text:
+                            result_json += part.text
+            except Exception as e:
+                logger.error(f"Error extracting text from candidates: {str(e)}")
                 
-            logger.error(f"DEBUG RESPONSE: {response}")
-            logger.error(f"DEBUG TEXT: {result_json}")
+            if not result_json:
+                try:
+                    result_json = response.text or ""
+                except ValueError:
+                    pass
 
-            if result_json.startswith("```json"):
-                result_json = result_json[7:]
-            if result_json.startswith("```"):
-                result_json = result_json[3:]
-            if result_json.endswith("```"):
-                result_json = result_json[:-3]
-            result_json = result_json.strip()
+            # Robust JSON extraction using regex
+            match = re.search(r'\{.*\}', result_json, re.DOTALL)
+            if match:
+                result_json = match.group(0)
+            else:
+                logger.error(f"Failed to find JSON in LLM response. Raw text was: {result_json}")
+                result_json = result_json.strip()
 
             result_data = json.loads(result_json)
             result_data["verification_timestamp"] = datetime.utcnow().isoformat() + "Z"

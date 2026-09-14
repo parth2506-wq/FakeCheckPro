@@ -33,81 +33,38 @@ async def get_trending_data():
         if trending_cache:
             return trending_cache
             
-        logger.info("Fetching global trending fake topics from Gemini on demand...")
-        try:
-            api_key = os.getenv("GEMINI_API_KEY")
-            if "GOOGLE_API_KEY" in os.environ:
-                api_key = os.getenv("GOOGLE_API_KEY", api_key)
-                
-            if api_key:
-                client = genai.Client(api_key=api_key)
-                prompt = "What are the current top 6 global trending fake news topics and 8 trending keywords? Provide the output as JSON."
-                system_instruction = """
-                You are an AI tracking global misinformation.
-                Return exactly this JSON structure:
-                {
-                  "topics": [
-                    {
-                      "title": "Unverified Claim",
-                      "count": 9,
-                      "subtitle": "Short snippet of a fake news example related to this..."
-                    }
-                  ],
-                  "keywords": [
-                    {
-                      "keyword": "fake news",
-                      "count": "2"
-                    }
-                  ]
-                }
-                Provide 6 trending fake topics, and 8 trending keywords.
-                """
-                
-                response = client.models.generate_content(
-                    model='gemini-3.6-flash',
-                    contents=prompt,
-                    config=types.GenerateContentConfig(
-                        system_instruction=system_instruction,
-                        response_mime_type="application/json",
-                        temperature=0.7
-                    )
-                )
-                
-                raw_text = response.text
-                if raw_text.startswith("```json"):
-                    raw_text = raw_text.strip("```json").strip("```").strip()
-                elif raw_text.startswith("```"):
-                    raw_text = raw_text.strip("```").strip()
-                    
-                data = json.loads(raw_text)
-                trending_cache = {
-                    "trending_topics": data.get("topics", []),
-                    "trending_keywords": data.get("keywords", [])
-                }
-                return trending_cache
-            else:
-                raise Exception("No Gemini API key found")
-        except Exception as e:
-            logger.error(f"Failed to fetch trending topics: {str(e)}")
-            trending_cache = {
-                "trending_topics": [
-                    {"title": "Unverified Claim", "count": 9, "subtitle": "cis Just Backed Trump, Released SPREAD THIS BREAKING: Pope Franc Incredible Statement..."},
-                    {"title": "Miracle Cure", "count": 8, "subtitle": "BREAKING!!! SHOCKING new discovery - drinking hot lemon water at 4 AM cures ALL..."},
-                    {"title": "Health Misinformation", "count": 6, "subtitle": "BREAKING!!! SHOCKING new discovery - drinking hot lemon water at 4 AM cures ALL..."},
-                    {"title": "Big Pharma Conspiracy", "count": 6, "subtitle": "BREAKING!!! SHOCKING miracle cure discovered!"},
-                    {"title": "Hoax", "count": 5, "subtitle": "Breaking: scientists claim the moon is made of..."},
-                    {"title": "Nasa", "count": 4, "subtitle": "NASA has confirmed that aliens have landed in..."}
-                ],
-                "trending_keywords": [
-                    {"keyword": "commonwealth games 2026", "count": "2"},
-                    {"keyword": "fake news", "count": "2"},
-                    {"keyword": "unverified claim", "count": "2"},
-                    {"keyword": "the hindu", "count": "1"},
-                    {"keyword": "india news", "count": "1"},
-                    {"keyword": "kerala floods", "count": "1"}
-                ]
-            }
-            return trending_cache
+        logger.info("Using hardcoded fallback for trending topics (Gemini API disabled temporarily)...")
+        
+        # --- GEMINI API CALL DISABLED ---
+        # try:
+        #     api_key = os.getenv("GEMINI_API_KEY")
+        #     if "GOOGLE_API_KEY" in os.environ:
+        #         api_key = os.getenv("GOOGLE_API_KEY", api_key)
+        #         
+        #     if api_key:
+        #         client = genai.Client(api_key=api_key)
+        #         ...
+        # --- END DISABLED ---
+        
+        trending_cache = {
+            "trending_topics": [
+                {"title": "Unverified Claim", "count": 9, "subtitle": "cis Just Backed Trump, Released SPREAD THIS BREAKING: Pope Franc Incredible Statement..."},
+                {"title": "Miracle Cure", "count": 8, "subtitle": "BREAKING!!! SHOCKING new discovery - drinking hot lemon water at 4 AM cures ALL..."},
+                {"title": "Health Misinformation", "count": 6, "subtitle": "BREAKING!!! SHOCKING new discovery - drinking hot lemon water at 4 AM cures ALL..."},
+                {"title": "Big Pharma Conspiracy", "count": 6, "subtitle": "BREAKING!!! SHOCKING miracle cure discovered!"},
+                {"title": "Hoax", "count": 5, "subtitle": "Breaking: scientists claim the moon is made of..."},
+                {"title": "Nasa", "count": 4, "subtitle": "NASA has confirmed that aliens have landed in..."}
+            ],
+            "trending_keywords": [
+                {"keyword": "commonwealth games 2026", "count": "2"},
+                {"keyword": "fake news", "count": "2"},
+                {"keyword": "unverified claim", "count": "2"},
+                {"keyword": "the hindu", "count": "1"},
+                {"keyword": "india news", "count": "1"},
+                {"keyword": "kerala floods", "count": "1"}
+            ]
+        }
+        return trending_cache
 
 @router.get("", response_model=HistoryPaginatedResponse)
 def get_history(

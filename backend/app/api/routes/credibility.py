@@ -29,6 +29,9 @@ async def analyze_credibility(request: CredibilityAnalyzeRequest):
         text_for_evidence = request.text
         if request.title:
             text_for_evidence = f"{request.title}\n{request.text}"
+            
+        # Truncate to max 3000 chars (~500 words) to speed up Gemini and keep it focused on core claims
+        text_for_evidence = text_for_evidence[:4000]
 
         translated_text = ml_result.get("translated_text")
         detected_language = ml_result.get("detected_language")

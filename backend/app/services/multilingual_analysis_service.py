@@ -37,47 +37,83 @@ class LanguageDetectionService:
 
 class TranslationService:
     @staticmethod
-    def translate(text: str, source_lang: str) -> dict:
+    def translate(title: str, text: str, source_lang: str) -> dict:
         if source_lang not in ['hi', 'mr']:
             return {
+                "translated_title": None,
                 "translated_text": None,
                 "status": "not_required"
             }
             
+        # Limit the text to save tokens/bandwidth and keep ML inference performant
+        text_to_translate = text[:3000]
+        title_to_translate = title[:500]
+        
         try:
-            # We use deep-translator to translate to English
-            translator = GoogleTranslator(source=source_lang, target='en')
+            # FAST PATH: Try GoogleTranslator first
+            from deep_translator import GoogleTranslator
+            translator = GoogleTranslator(source='auto', target='en')
             
-            # deep-translator uses GET requests which fail on very long URLs when text is URL-encoded.
-            # Hindi/Marathi texts take up many bytes per char, causing failures > 1500 chars.
-            # To avoid API blocks and keep Chain 1 performant, we safely chunk to 1000 chars,
-            # and only translate the first 3 chunks (first 3000 chars is sufficient for ML).
-            chunk_size = 1000
-            max_chunks = 3
+            translated_title = translator.translate(title_to_translate) if title_to_translate.strip() else ""
+            translated_text = translator.translate(text_to_translate) if text_to_translate.strip() else ""
             
-            text_to_translate = text[:(chunk_size * max_chunks)]
-            chunks = [text_to_translate[i:i+chunk_size] for i in range(0, len(text_to_translate), chunk_size)]
-            
-            translated_chunks = []
-            for chunk in chunks:
-                if chunk.strip():
-                    translated = translator.translate(chunk)
-                    if translated:
-                        translated_chunks.append(translated)
-            
-            translated_text = " ".join(translated_chunks)
+            if (title_to_translate.strip() and not translated_title) or (text_to_translate.strip() and not translated_text):
+                raise Exception("deep-translator returned empty output (likely blocked).")
                 
             return {
+                "translated_title": translated_title,
                 "translated_text": translated_text,
                 "status": "completed"
             }
-        except Exception as e:
-            logger.error(f"Translation failed: {str(e)}")
-            return {
-                "translated_text": None,
-                "status": "failed",
-                "error": str(e)
-            }
+        except Exception as fast_error:
+            logger.warning(f"GoogleTranslator fast path failed ({str(fast_error)}). Falling back to Gemini API.")
+            
+            # FALLBACK PATH: Gemini API
+            try:
+                import os
+                from google import genai
+                
+                api_key = os.getenv("GEMINI_API_KEY")
+                if not api_key:
+                    raise Exception("GEMINI_API_KEY not found in environment variables.")
+                    
+                client = genai.Client(api_key=api_key)
+                
+                language_name = "Hindi" if source_lang == 'hi' else "Marathi"
+                prompt = f"Translate the following {language_name} text to English. Preserve the exact markers '---TITLE---' and '---TEXT---'.\n\n---TITLE---\n{title_to_translate}\n---TEXT---\n{text_to_translate}"
+                
+                response = client.models.generate_content(
+                    model='gemini-3.1-flash-lite',
+                    contents=prompt
+                )
+                
+                result = response.text.strip()
+                
+                # Parse the result
+                translated_title = ""
+                translated_text = result
+                
+                if "---TITLE---" in result and "---TEXT---" in result:
+                    parts = result.split("---TEXT---")
+                    translated_title = parts[0].replace("---TITLE---", "").strip()
+                    translated_text = parts[1].strip()
+                elif "---TITLE---" in result:
+                    translated_title = result.replace("---TITLE---", "").strip()
+                    translated_text = ""
+                    
+                return {
+                    "translated_title": translated_title,
+                    "translated_text": translated_text,
+                    "status": "completed"
+                }
+            except Exception as e:
+                logger.error(f"Gemini Fallback translation failed: {str(e)}")
+                return {
+                    "translated_text": None,
+                    "translated_title": None,
+                    "status": "failed",
+                    "error": str(e)
+                }
 
 class MultilingualAnalysisService:
     @staticmethod
@@ -102,25 +138,14 @@ class MultilingualAnalysisService:
         translation_status = "not_required"
         
         if detected_language in ['hi', 'mr']:
-            # We translate title and text separately if they exist
-            if title.strip():
-                t_title = TranslationService.translate(title, detected_language)
-                if t_title["status"] == "completed":
-                    english_title = t_title["translated_text"]
-                    translation_status = "completed"
-                else:
-                    translation_status = "failed"
-            
-            if text.strip():
-                t_text = TranslationService.translate(text, detected_language)
-                if t_text["status"] == "completed":
-                    english_text = t_text["translated_text"]
-                    translation_status = "completed"
-                else:
-                    translation_status = "failed"
-            
-            if translation_status == "completed":
+            t_res = TranslationService.translate(title, text, detected_language)
+            if t_res["status"] == "completed":
+                english_title = t_res["translated_title"]
+                english_text = t_res["translated_text"]
+                translation_status = "completed"
                 translated_text_combined = f"{english_title} {english_text}".strip()
+            else:
+                translation_status = "failed"
             
         # 3. Call existing ML Prediction Service
         # Note: If translation failed, we do NOT send original Hindi/Marathi to ML.

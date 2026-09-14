@@ -5,7 +5,7 @@ import { motion, useMotionValue, useTransform, animate } from 'framer-motion';
 const ConfidenceBar = ({ confidence, isFake }) => {
   const { t } = useTranslation();
   const percentage = Math.min(Math.max(confidence * 100, 0), 100);
-  const colorClass = isFake ? 'bg-[var(--danger)]' : 'bg-[var(--success)]';
+  const colorClass = 'bg-[var(--text-primary)]';
   
   const count = useMotionValue(0);
   const rounded = useTransform(count, (latest) => `${latest.toFixed(1)}%`);
@@ -19,7 +19,7 @@ const ConfidenceBar = ({ confidence, isFake }) => {
     <div className="w-full flex flex-col gap-2 mt-4">
       <div className="flex justify-between items-end">
         <span className="text-sm font-medium text-[var(--text-secondary)]">{t('analyze.report.xai.modelConfidence')}</span>
-        <motion.span className={`text-xl font-bold ${isFake ? 'text-[var(--danger)]' : 'text-[var(--success)]'}`}>
+        <motion.span className="text-xl font-bold text-[var(--text-primary)]">
           {rounded}
         </motion.span>
       </div>

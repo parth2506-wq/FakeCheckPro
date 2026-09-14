@@ -30,7 +30,7 @@ const PredictionCard = ({ result }) => {
           <h3 className="text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider">{t('analyze.report.xai.predictionResult')}</h3>
           
           <div className="text-[var(--text-primary)] text-xl font-medium">
-            {t('analyze.report.xai.predictionDesc1')} <span className={`font-bold ${isFake ? 'text-[var(--danger)]' : 'text-[var(--success)]'}`}>'{isFake ? t('analyze.report.xai.fake') : t('analyze.report.xai.real')}'</span> {t('analyze.report.xai.predictionDesc2')}
+            {t('analyze.report.xai.predictionDesc1')} <span className="font-bold text-[var(--text-primary)]">'{isFake ? t('analyze.report.xai.fake') : t('analyze.report.xai.real')}'</span> {t('analyze.report.xai.predictionDesc2')}
           </div>
 
           <p className="text-[13px] text-[var(--text-secondary)] mt-1 leading-relaxed max-w-3xl">
